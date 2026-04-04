@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import { useRouter } from 'expo-router';
 import { FilterInput } from '../../src/components/movies/FilterInput';
 import { MovieGrid } from '../../src/components/MovieGrid';
 import { COLORS, FONTS, SPACING } from '../../src/constants/theme';
@@ -13,6 +14,7 @@ const ANDROID_EXTRA_TOP =
   Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0;
 
 export default function HomeScreen() {
+  const router = useRouter();
   const [filterText, setFilterText] = useState('');
   const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
@@ -43,9 +45,12 @@ export default function HomeScreen() {
     }
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const handleMoviePress = useCallback((_movie: Movie) => {
-    // Navigate to detail screen when implemented
-  }, []);
+  const handleMoviePress = useCallback((movie: Movie) => {
+    router.push({
+      pathname: '/movie/[id]',
+      params: { id: movie.id, title: movie.title },
+    });
+  }, [router]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

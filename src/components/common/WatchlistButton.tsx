@@ -6,9 +6,10 @@ import { useWatchlistStore } from '../../store/watchlistStore';
 
 interface WatchlistButtonProps {
   movie: Movie;
+  size?: 'default' | 'large';
 }
 
-export function WatchlistButton({ movie }: WatchlistButtonProps) {
+export function WatchlistButton({ movie, size = 'default' }: WatchlistButtonProps) {
   const isInWatchlist = useWatchlistStore((s) => s.isInWatchlist(movie.id));
   const toggleWatchlist = useWatchlistStore((s) => s.toggleWatchlist);
 
@@ -19,11 +20,11 @@ export function WatchlistButton({ movie }: WatchlistButtonProps) {
       accessibilityState={{ selected: isInWatchlist }}
       accessibilityLabel={isInWatchlist ? 'Quitar de watchlist' : 'Añadir a watchlist'}
       onPress={() => toggleWatchlist(movie)}
-      style={[styles.button, isInWatchlist && styles.buttonActive]}
+      style={[styles.button, size === 'large' && styles.buttonLarge, isInWatchlist && styles.buttonActive]}
       android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: false }}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
-      <Text style={[styles.label, isInWatchlist && styles.labelActive]}>
+      <Text style={[styles.label, size === 'large' && styles.labelLarge, isInWatchlist && styles.labelActive]}>
         {isInWatchlist ? '✓ En watchlist' : '+ Watchlist'}
       </Text>
     </Pressable>
@@ -40,6 +41,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buttonLarge: {
+    paddingVertical: SPACING.md,
+  },
   buttonActive: {
     backgroundColor: COLORS.accent,
     borderColor: COLORS.accent,
@@ -48,6 +52,9 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
+  },
+  labelLarge: {
+    fontSize: FONTS.sizes.md,
   },
   labelActive: {
     color: COLORS.textPrimary,

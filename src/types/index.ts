@@ -38,6 +38,32 @@ export interface Cast {
   known_for_department: string;
 }
 
+export interface Crew {
+  id: number;
+  name: string;
+  job: string;
+  department: string;
+  profile_path: string | null;
+  gender: number;
+}
+
+export interface ProductionCompany {
+  id: number;
+  name: string;
+  logo_path: string | null;
+  origin_country: string;
+}
+
+export interface MovieDetails extends Movie {
+  genres: Genre[];
+  runtime: number | null;
+  tagline: string;
+  status: string;
+  budget: number;
+  revenue: number;
+  production_companies: ProductionCompany[];
+}
+
 export interface WatchlistItem {
   movieId: number;
   addedAt: string;
