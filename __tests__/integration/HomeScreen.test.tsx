@@ -67,7 +67,29 @@ describe('HomeScreen', () => {
     });
     await findByTestId('movies-list');
     fireEvent.changeText(getByTestId('filter-input'), 'Z');
-    await findByTestId('empty-state');
+    await findByTestId('empty-state', {}, { timeout: 5000 });
+  });
+
+  it('shows filtered movie when letter matches title, genres, and cast', async () => {
+    const { getByTestId, findByTestId, findByText } = render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+    await findByTestId('movies-list');
+    // "Alpha" starts with A, mockMovieDetails has 3 genres, mockCredits has 4f/4m cast
+    fireEvent.changeText(getByTestId('filter-input'), 'A');
+    await findByText('Alpha', {}, { timeout: 5000 });
+  });
+
+  it('clears filter when clear button is pressed', async () => {
+    const { getByTestId, findByTestId, queryByTestId } = render(<HomeScreen />, {
+      wrapper: createWrapper(),
+    });
+    await findByTestId('movies-list');
+    fireEvent.changeText(getByTestId('filter-input'), 'Z');
+    await findByTestId('filter-clear-btn');
+    fireEvent.press(getByTestId('filter-clear-btn'));
+    await findByTestId('movies-list');
+    expect(queryByTestId('empty-state')).toBeNull();
   });
 
   it('sanitizes numeric input — value stays empty', async () => {

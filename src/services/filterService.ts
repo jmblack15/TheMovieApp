@@ -49,13 +49,22 @@ export function hasBalancedCast(
   return female >= minFemale && male >= minMale;
 }
 
-export function filterMovies(movies: Movie[], letter: string): Movie[] {
+export interface FilterableMovie {
+  movie: Movie;
+  genreCount: number;
+  cast: Cast[];
+}
+
+export function filterMovies(items: FilterableMovie[], letter: string): Movie[] {
   const l = normalizeLetter(letter);
-  if (!l) return movies;
-  return movies.filter((movie) => {
-    if (!titleStartsWith(movie.title, l)) return false;
-    if (!hasMinimumGenres(movie, MIN_GENRES)) return false;
-    if (movie.cast !== undefined && !hasBalancedCast(movie.cast)) return false;
-    return true;
-  });
+  if (!l) return items.map((i) => i.movie);
+
+  return items
+    .filter(({ movie, genreCount, cast }) => {
+      if (!titleStartsWith(movie.title, l)) return false;
+      if (genreCount < MIN_GENRES) return false;
+      if (!hasBalancedCast(cast)) return false;
+      return true;
+    })
+    .map(({ movie }) => movie);
 }

@@ -21,7 +21,7 @@ const CastItem = memo(function CastItem({ actor }: CastItemProps) {
     <View testID={`cast-item-${actor.id}`} style={styles.item}>
       {profileUri ? (
         <Image
-          source={{ uri: profileUri }}
+          source={{ uri: profileUri ?? undefined }}
           style={styles.avatar}
           contentFit="cover"
           cachePolicy="memory-disk"

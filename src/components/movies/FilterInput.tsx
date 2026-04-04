@@ -12,13 +12,14 @@ import { COLORS, FONTS, RADIUS, SPACING } from '../../constants/theme';
 interface FilterInputProps {
   value: string;
   onChangeText: (text: string) => void;
+  onClear?: () => void;
 }
 
 function sanitize(text: string): string {
   return text.replace(/[^a-zA-ZÀ-ÿ]/g, '');
 }
 
-export function FilterInput({ value, onChangeText }: FilterInputProps) {
+export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -40,7 +41,7 @@ export function FilterInput({ value, onChangeText }: FilterInputProps) {
         <Pressable
           testID="filter-clear-btn"
           style={styles.clearButton}
-          onPress={() => onChangeText('')}
+          onPress={() => { if (onClear) { onClear(); } else { onChangeText(''); } }}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: true }}
         >
