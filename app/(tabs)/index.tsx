@@ -1,98 +1,96 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
+import { FilterInput } from '../../src/components/movies/FilterInput';
+import { MovieGrid } from '../../src/components/MovieGrid';
+import { COLORS, FONTS, SPACING } from '../../src/constants/theme';
+import { useMoviesInfinite } from '../../src/hooks/useMovies';
+import { useOfflineStore } from '../../src/store/offlineStore';
+import type { Movie } from '../../src/types/index';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const ANDROID_EXTRA_TOP =
+  Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 0;
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [filterText, setFilterText] = useState('');
+  const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const {
+    movies,
+    isOffline,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isRefreshing,
+    refetch,
+  } = useMoviesInfinite();
+
+  useEffect(() => {
+    loadCachedMovies();
+  }, [loadCachedMovies]);
+
+  const filteredMovies = useMemo(() => {
+    const query = filterText.trim().toLowerCase();
+    if (!query) return movies;
+    return movies.filter((m) => m.title.toLowerCase().includes(query));
+  }, [movies, filterText]);
+
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const handleMoviePress = useCallback((_movie: Movie) => {
+    // Navigate to detail screen when implemented
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <ExpoStatusBar style="light" />
+
+      <View style={[styles.header, { paddingTop: ANDROID_EXTRA_TOP }]}>
+        <Text style={styles.title}>Películas</Text>
+        <Text style={styles.subtitle}>Descubre lo más popular</Text>
+      </View>
+
+      <FilterInput value={filterText} onChangeText={setFilterText} />
+
+      <MovieGrid
+        movies={filteredMovies}
+        isOffline={isOffline}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        isRefreshing={isRefreshing}
+        onEndReached={handleEndReached}
+        onRefresh={refetch}
+        onMoviePress={handleMoviePress}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.background,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  title: {
+    fontSize: FONTS.sizes.xxl,
+    fontWeight: FONTS.weights.bold,
+    color: COLORS.textPrimary,
+  },
+  subtitle: {
+    fontSize: FONTS.sizes.sm + 1,
+    color: COLORS.textSecondary,
+    marginTop: SPACING.xs,
   },
 });
