@@ -22,6 +22,7 @@ interface MovieGridProps {
   onEndReached: () => void;
   onRefresh: () => void;
   onMoviePress?: (movie: Movie) => void;
+  emptyComponent?: React.ReactElement | null;
 }
 
 export function MovieGrid({
@@ -34,6 +35,7 @@ export function MovieGrid({
   onEndReached,
   onRefresh,
   onMoviePress,
+  emptyComponent,
 }: MovieGridProps) {
   const renderItem = useCallback(
     ({ item }: { item: Movie }) => (
@@ -84,17 +86,19 @@ export function MovieGrid({
         ) : null
       }
       ListEmptyComponent={
-        <View testID="empty-state" style={styles.centered}>
-          <Text style={styles.emptyEmoji}>🎬</Text>
-          <Text style={styles.emptyTitle}>
-            {isOffline ? 'Sin caché disponible' : 'Sin películas'}
-          </Text>
-          <Text style={styles.emptySubtitle}>
-            {isOffline
-              ? 'Conéctate para descargar contenido'
-              : 'No se encontraron películas disponibles'}
-          </Text>
-        </View>
+        emptyComponent !== undefined ? emptyComponent : (
+          <View testID="empty-state" style={styles.centered}>
+            <Text style={styles.emptyEmoji}>🎬</Text>
+            <Text style={styles.emptyTitle}>
+              {isOffline ? 'Sin caché disponible' : 'Sin películas'}
+            </Text>
+            <Text style={styles.emptySubtitle}>
+              {isOffline
+                ? 'Conéctate para descargar contenido'
+                : 'No se encontraron películas disponibles'}
+            </Text>
+          </View>
+        )
       }
     />
   );

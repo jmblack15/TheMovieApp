@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { FilterInput } from '../../src/components/movies/FilterInput';
 import { MovieGrid } from '../../src/components/MovieGrid';
 import { COLORS, FONTS, SPACING } from '../../src/constants/theme';
-import { useMoviesInfinite } from '../../src/hooks/useMovies';
+import { useMovieFilter } from '../../src/hooks/useMovieFilter';
 import { useOfflineStore } from '../../src/store/offlineStore';
 import type { Movie } from '../../src/types/index';
 
@@ -15,35 +15,33 @@ const ANDROID_EXTRA_TOP =
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [filterText, setFilterText] = useState('');
   const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
   const {
     movies,
+    letterInput,
+    isFiltering,
+    isLoading,
+    isLoadingFilter,
     isOffline,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading,
-    isRefreshing,
     refetch,
-  } = useMoviesInfinite();
+    isRefreshing,
+    handleLetterChange,
+    clearFilter,
+  } = useMovieFilter();
 
   useEffect(() => {
     loadCachedMovies();
   }, [loadCachedMovies]);
 
-  const filteredMovies = useMemo(() => {
-    const query = filterText.trim().toLowerCase();
-    if (!query) return movies;
-    return movies.filter((m) => m.title.toLowerCase().includes(query));
-  }, [movies, filterText]);
-
   const handleEndReached = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
+    if (!isFiltering && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFiltering]);
 
   const handleMoviePress = useCallback((movie: Movie) => {
     router.push({
@@ -51,6 +49,20 @@ export default function HomeScreen() {
       params: { id: movie.id, title: movie.title },
     });
   }, [router]);
+
+  const filterEmptyComponent =
+    isFiltering && !isLoadingFilter && movies.length === 0 ? (
+      <View testID="empty-state" style={styles.emptyState}>
+        <Text style={styles.emptyEmoji}>🔍</Text>
+        <Text style={styles.emptyTitle}>
+          Sin resultados para '{letterInput}'
+        </Text>
+        <Text style={styles.emptySubtitle}>
+          La película debe comenzar con esa letra, tener mínimo 3 géneros y al
+          menos 3 actrices y 3 actores en el reparto principal.
+        </Text>
+      </View>
+    ) : isFiltering && isLoadingFilter ? null : undefined;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -61,10 +73,23 @@ export default function HomeScreen() {
         <Text style={styles.subtitle}>Descubre lo más popular</Text>
       </View>
 
-      <FilterInput value={filterText} onChangeText={setFilterText} />
+      <FilterInput
+        value={letterInput}
+        onChangeText={handleLetterChange}
+        onClear={clearFilter}
+      />
+
+      {isLoadingFilter && (
+        <View style={styles.filterLoading}>
+          <ActivityIndicator size="small" color={COLORS.textSecondary} />
+          <Text style={styles.filterLoadingText}>
+            Verificando géneros y reparto...
+          </Text>
+        </View>
+      )}
 
       <MovieGrid
-        movies={filteredMovies}
+        movies={movies}
         isOffline={isOffline}
         isLoading={isLoading}
         isFetchingNextPage={isFetchingNextPage}
@@ -73,6 +98,7 @@ export default function HomeScreen() {
         onEndReached={handleEndReached}
         onRefresh={refetch}
         onMoviePress={handleMoviePress}
+        emptyComponent={filterEmptyComponent}
       />
     </SafeAreaView>
   );
@@ -97,5 +123,40 @@ const styles = StyleSheet.create({
     fontSize: FONTS.sizes.sm + 1,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
+  },
+  filterLoading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  filterLoadingText: {
+    color: COLORS.textSecondary,
+    fontSize: FONTS.sizes.sm,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 80,
+  },
+  emptyEmoji: {
+    fontSize: 56,
+    marginBottom: SPACING.md,
+  },
+  emptyTitle: {
+    color: COLORS.textPrimary,
+    fontSize: FONTS.sizes.lg,
+    fontWeight: FONTS.weights.bold,
+    marginBottom: SPACING.xs,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.lg,
+  },
+  emptySubtitle: {
+    color: COLORS.textSecondary,
+    fontSize: FONTS.sizes.sm,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.xl,
   },
 });

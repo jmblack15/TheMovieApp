@@ -26,7 +26,7 @@ export function MovieCard({ movie, onPress }: MovieCardProps) {
       <View style={styles.posterWrapper}>
         {posterUrl ? (
           <Image
-            source={{ uri: posterUrl }}
+            source={{ uri: posterUrl ?? undefined }}
             style={styles.poster}
             contentFit="cover"
             transition={200}

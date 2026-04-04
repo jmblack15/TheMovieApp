@@ -5,6 +5,7 @@ import {
   hasMinimumGenres,
   normalizeLetter,
   titleStartsWith,
+  type FilterableMovie,
 } from '../../src/services/filterService';
 import type { Cast, Genre, Movie } from '../../src/types/index';
 
@@ -181,47 +182,63 @@ describe('hasBalancedCast', () => {
 
 // ── filterMovies ──────────────────────────────────────────────────────────────
 
+function makeFilterable(
+  movie: Movie,
+  cast: Cast[],
+  genreCount: number,
+): FilterableMovie {
+  return { movie, cast, genreCount };
+}
+
 describe('filterMovies', () => {
-  const baseMovies = [
-    buildMovie({ id: 1, title: 'Alpha' }),
-    buildMovie({ id: 2, title: 'Bravo' }),
+  const balancedCast = buildCast(3, 3);
+  const baseItems: FilterableMovie[] = [
+    makeFilterable(buildMovie({ id: 1, title: 'Alpha' }), balancedCast, 3),
+    makeFilterable(buildMovie({ id: 2, title: 'Bravo' }), balancedCast, 3),
   ];
 
   it('returns all movies when letter is empty', () => {
-    expect(filterMovies(baseMovies, '')).toHaveLength(2);
+    expect(filterMovies(baseItems, '')).toHaveLength(2);
   });
 
   it('filters by starting letter', () => {
-    const result = filterMovies(baseMovies, 'a');
+    const result = filterMovies(baseItems, 'a');
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe('Alpha');
   });
 
   it('excludes movies with fewer than 3 genres', () => {
-    const movies = [
-      buildMovie({ id: 1, title: 'Alpha', genre_ids: [28, 12] }), // only 2
+    const items = [
+      makeFilterable(buildMovie({ id: 1, title: 'Alpha' }), balancedCast, 2),
     ];
-    expect(filterMovies(movies, 'a')).toHaveLength(0);
+    expect(filterMovies(items, 'a')).toHaveLength(0);
   });
 
-  it('excludes movies with unbalanced cast when cast is present', () => {
-    const movies = [
-      buildMovie({
-        id: 1,
-        title: 'Alpha',
-        cast: buildCast(1, 5), // only 1 female < 3 threshold
-      }),
+  it('excludes movies with unbalanced cast', () => {
+    const items = [
+      makeFilterable(
+        buildMovie({ id: 1, title: 'Alpha' }),
+        buildCast(1, 5), // only 1 female < 3 threshold
+        3,
+      ),
     ];
-    expect(filterMovies(movies, 'a')).toHaveLength(0);
+    expect(filterMovies(items, 'a')).toHaveLength(0);
+  });
+
+  it('excludes movies whose title does not start with the letter', () => {
+    const items = [
+      makeFilterable(buildMovie({ id: 1, title: 'Bravo' }), balancedCast, 3),
+    ];
+    expect(filterMovies(items, 'a')).toHaveLength(0);
   });
 
   it('requires all conditions to pass simultaneously', () => {
-    const movies = [
-      buildMovie({ id: 1, title: 'Alpha', cast: buildCast(3, 3) }), // passes all
-      buildMovie({ id: 2, title: 'Alpha', genre_ids: [1] }),          // fails genre
-      buildMovie({ id: 3, title: 'Bravo', cast: buildCast(3, 3) }), // fails letter
+    const items = [
+      makeFilterable(buildMovie({ id: 1, title: 'Alpha' }), balancedCast, 3), // passes all
+      makeFilterable(buildMovie({ id: 2, title: 'Alpha' }), balancedCast, 2), // fails genre
+      makeFilterable(buildMovie({ id: 3, title: 'Bravo' }), balancedCast, 3), // fails letter
     ];
-    const result = filterMovies(movies, 'a');
+    const result = filterMovies(items, 'a');
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe(1);
   });
