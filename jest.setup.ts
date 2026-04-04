@@ -16,13 +16,13 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 // ── Expo Notifications ────────────────────────────────────────────────────────
 jest.mock('expo-notifications', () => ({
   setNotificationHandler: jest.fn(),
+  setNotificationChannelAsync: jest.fn(() => Promise.resolve()),
   getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
   requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
-  scheduleNotificationAsync: jest.fn(() =>
-    Promise.resolve('mock-notification-id'),
-  ),
+  scheduleNotificationAsync: jest.fn(() => Promise.resolve('mock-notification-id')),
   cancelScheduledNotificationAsync: jest.fn(() => Promise.resolve()),
   addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  AndroidImportance: { DEFAULT: 3, HIGH: 4, MAX: 5 },
 }));
 
 // ── expo-image ────────────────────────────────────────────────────────────────

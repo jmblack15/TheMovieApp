@@ -91,4 +91,7 @@ export const errorHandlers = {
   networkError: http.get(`${TMDB_BASE}/discover/movie`, () =>
     HttpResponse.error(),
   ),
+  movieDetailError: http.get(`${TMDB_BASE}/movie/:id`, () =>
+    HttpResponse.json({ status_message: 'Server Error' }, { status: 500 }),
+  ),
 };

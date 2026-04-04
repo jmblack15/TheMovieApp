@@ -4,6 +4,8 @@ export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 export const QUERY_KEYS = {
   moviesInfinite: ['movies', 'infinite'] as const,
   movieDetail: (id: number) => ['movie', id] as const,
+  movieDetails: (id: number) => ['movie', 'details', id] as const,
+  movieCredits: (id: number) => ['movie', 'credits', id] as const,
 } as const;
 
 export const PAGINATION = {
@@ -42,4 +44,10 @@ export const STORAGE_KEYS = {
   lastSync: 'last_sync',
   genres: 'cached_genres',
   watchlist: 'watchlist',
+} as const;
+
+export const WATCHLIST = {
+  notificationDelayMs: 3 * 60 * 1000, // 3 minutes
+  notificationTitle: '🎬 Tu watchlist te espera',
+  notificationBody: (movieName: string) => `¿Listo para ver ${movieName}?`,
 } as const;
