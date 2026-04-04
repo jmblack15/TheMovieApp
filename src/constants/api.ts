@@ -29,6 +29,12 @@ export const IMAGE_SIZES = {
     large: 'w1280',
     original: 'original',
   },
+  profile: {
+    small: 'w45',
+    medium: 'w185',
+    large: 'h632',
+    original: 'original',
+  },
 } as const;
 
 export const STORAGE_KEYS = {

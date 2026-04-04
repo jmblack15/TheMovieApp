@@ -13,11 +13,29 @@ export interface Movie {
   original_language: string;
   original_title: string;
   video: boolean;
+  // Present on detail responses and enriched results
+  genres?: Genre[];
+  cast?: Cast[];
+  runtime?: number;
+  tagline?: string;
+  status?: string;
+  budget?: number;
+  revenue?: number;
 }
 
 export interface Genre {
   id: number;
   name: string;
+}
+
+export interface Cast {
+  id: number;
+  name: string;
+  character: string;
+  profile_path: string | null;
+  gender: number; // 0=unspecified, 1=female, 2=male
+  order: number;
+  known_for_department: string;
 }
 
 export interface WatchlistItem {

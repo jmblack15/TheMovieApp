@@ -2,12 +2,15 @@ import React, { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { COLORS, FONTS, SPACING } from '../constants/theme';
 import type { Movie } from '../types/index';
-import { MovieCard } from './MovieCard';
+import { OfflineBanner } from './common/OfflineBanner';
+import { MovieCard } from './movies/MovieCard';
 
 interface MovieGridProps {
   movies: Movie[];
@@ -15,7 +18,9 @@ interface MovieGridProps {
   isLoading: boolean;
   isFetchingNextPage: boolean;
   hasNextPage: boolean;
+  isRefreshing: boolean;
   onEndReached: () => void;
+  onRefresh: () => void;
   onMoviePress?: (movie: Movie) => void;
 }
 
@@ -25,7 +30,9 @@ export function MovieGrid({
   isLoading,
   isFetchingNextPage,
   hasNextPage,
+  isRefreshing,
   onEndReached,
+  onRefresh,
   onMoviePress,
 }: MovieGridProps) {
   const renderItem = useCallback(
@@ -45,14 +52,16 @@ export function MovieGrid({
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#E50914" />
+      <View testID="loading-state" style={styles.centered}>
+        <Text style={styles.loadingEmoji}>🎬</Text>
+        <ActivityIndicator size="large" color={COLORS.accent} style={styles.spinner} />
       </View>
     );
   }
 
   return (
     <FlatList
+      testID="movies-list"
       data={movies}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
@@ -60,22 +69,30 @@ export function MovieGrid({
       contentContainerStyle={styles.list}
       onEndReached={handleEndReached}
       onEndReachedThreshold={0.5}
-      ListHeaderComponent={
-        isOffline ? (
-          <View style={styles.offlineBanner}>
-            <Text style={styles.offlineText}>Sin conexion — mostrando cache</Text>
-          </View>
-        ) : null
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          tintColor={COLORS.accent}
+          colors={[COLORS.accent]}
+        />
       }
+      ListHeaderComponent={isOffline ? <OfflineBanner /> : null}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator style={styles.footer} color="#E50914" />
+          <ActivityIndicator style={styles.footer} color={COLORS.accent} />
         ) : null
       }
       ListEmptyComponent={
-        <View style={styles.centered}>
-          <Text style={styles.emptyText}>
-            {isOffline ? 'No hay peliculas en cache' : 'No hay peliculas disponibles'}
+        <View testID="empty-state" style={styles.centered}>
+          <Text style={styles.emptyEmoji}>🎬</Text>
+          <Text style={styles.emptyTitle}>
+            {isOffline ? 'Sin caché disponible' : 'Sin películas'}
+          </Text>
+          <Text style={styles.emptySubtitle}>
+            {isOffline
+              ? 'Conéctate para descargar contenido'
+              : 'No se encontraron películas disponibles'}
           </Text>
         </View>
       }
@@ -85,8 +102,8 @@ export function MovieGrid({
 
 const styles = StyleSheet.create({
   list: {
-    paddingHorizontal: 6,
-    paddingBottom: 24,
+    paddingHorizontal: SPACING.xs + 2,
+    paddingBottom: SPACING.xl,
   },
   centered: {
     flex: 1,
@@ -94,24 +111,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 80,
   },
-  offlineBanner: {
-    backgroundColor: '#3a2a00',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 8,
-    borderRadius: 6,
-    marginHorizontal: 6,
+  loadingEmoji: {
+    fontSize: 48,
+    marginBottom: SPACING.lg,
   },
-  offlineText: {
-    color: '#FFB300',
-    fontSize: 13,
-    textAlign: 'center',
+  spinner: {
+    marginTop: SPACING.sm,
   },
   footer: {
-    paddingVertical: 16,
+    paddingVertical: SPACING.lg,
   },
-  emptyText: {
-    color: '#888',
-    fontSize: 15,
+  emptyEmoji: {
+    fontSize: 56,
+    marginBottom: SPACING.md,
+  },
+  emptyTitle: {
+    color: COLORS.textPrimary,
+    fontSize: FONTS.sizes.lg,
+    fontWeight: FONTS.weights.bold,
+    marginBottom: SPACING.xs,
+  },
+  emptySubtitle: {
+    color: COLORS.textSecondary,
+    fontSize: FONTS.sizes.sm,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.xl,
   },
 });

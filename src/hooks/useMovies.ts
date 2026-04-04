@@ -40,6 +40,8 @@ export function useMoviesInfinite() {
     hasNextPage: query.hasNextPage,
     isFetchingNextPage: query.isFetchingNextPage,
     isLoading: query.isLoading,
+    isRefreshing: query.isRefetching,
+    refetch: query.refetch,
     error: query.error,
   };
 }
