@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS, FONTS, RADIUS } from "../../src/constants/theme";
+import { useWatchlistStore } from "../../src/store/watchlistStore";
 
 interface TabIconProps {
   emoji: string;
@@ -23,6 +24,7 @@ function TabIcon({ emoji, label, focused }: TabIconProps) {
 
 export default function TabLayout() {
   const { bottom } = useSafeAreaInsets();
+  const items = useWatchlistStore((s) => s.items);
 
   return (
     <Tabs
@@ -43,6 +45,16 @@ export default function TabLayout() {
         options={{
           tabBarIcon: ({ focused }) => (
             <TabIcon emoji="🎬" label="Inicio" focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="watchlist"
+        options={{
+          tabBarBadge: items.length > 0 ? items.length : undefined,
+          tabBarBadgeStyle: { backgroundColor: COLORS.accent },
+          tabBarIcon: ({ focused }) => (
+            <TabIcon emoji="🔖" label="Watchlist" focused={focused} />
           ),
         }}
       />
