@@ -28,7 +28,7 @@ const makeWatchlistItem = (movie: Movie): WatchlistItem => ({
 });
 
 beforeEach(async () => {
-  useWatchlistStore.setState({ items: [], _pendingTimers: new Map() });
+  useWatchlistStore.setState({ items: [], isLoading: false });
 });
 
 describe('WatchlistButton', () => {

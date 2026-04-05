@@ -23,7 +23,7 @@ function makeWrapper() {
 // mockMovieDetails has id=1, title='Alpha'
 
 beforeEach(() => {
-  useWatchlistStore.setState({ items: [], _pendingTimers: new Map() });
+  useWatchlistStore.setState({ items: [], isLoading: false });
 });
 
 describe('DetailScreen', () => {
@@ -75,11 +75,7 @@ describe('DetailScreen', () => {
 
   it('calls markAsOpened with movieId=1 on mount', async () => {
     const markAsOpened = jest.fn();
-    useWatchlistStore.setState({
-      items: [],
-      _pendingTimers: new Map(),
-      markAsOpened,
-    } as Parameters<typeof useWatchlistStore.setState>[0]);
+    useWatchlistStore.setState({ items: [], isLoading: false, markAsOpened } as unknown as Parameters<typeof useWatchlistStore.setState>[0]);
 
     render(<MovieDetailScreen />, { wrapper: makeWrapper() });
 
