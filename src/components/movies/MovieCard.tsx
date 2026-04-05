@@ -1,7 +1,8 @@
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
-import { COLORS, FONTS, RADIUS, SPACING } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
+import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 import type { Movie } from '../../types/index';
 import { buildPosterUrl, formatRating, formatYear } from '../../utils/image';
 
@@ -11,6 +12,7 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ movie, onPress }: MovieCardProps) {
+  const { colors } = useTheme();
   const posterUrl = buildPosterUrl(movie.poster_path, 'medium');
 
   return (
@@ -23,7 +25,7 @@ export function MovieCard({ movie, onPress }: MovieCardProps) {
       android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: false }}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
     >
-      <View style={styles.posterWrapper}>
+      <View style={[styles.posterWrapper, { backgroundColor: colors.card }]}>
         {posterUrl ? (
           <Image
             source={{ uri: posterUrl ?? undefined }}
@@ -40,14 +42,18 @@ export function MovieCard({ movie, onPress }: MovieCardProps) {
         <View style={styles.gradientOverlay} />
 
         <View style={styles.ratingBadge}>
-          <Text style={styles.ratingText}>⭐ {formatRating(movie.vote_average)}</Text>
+          <Text style={[styles.ratingText, { color: colors.gold }]}>
+            ⭐ {formatRating(movie.vote_average)}
+          </Text>
         </View>
       </View>
 
-      <Text style={styles.title} numberOfLines={2}>
+      <Text style={[styles.title, { color: colors.textPrimary }]} numberOfLines={2}>
         {movie.title}
       </Text>
-      <Text style={styles.year}>{formatYear(movie.release_date)}</Text>
+      <Text style={[styles.year, { color: colors.textSecondary }]}>
+        {formatYear(movie.release_date)}
+      </Text>
     </Pressable>
   );
 }
@@ -60,7 +66,6 @@ const styles = StyleSheet.create({
   posterWrapper: {
     borderRadius: RADIUS.lg,
     overflow: 'hidden',
-    backgroundColor: COLORS.card,
     aspectRatio: 2 / 3,
     ...Platform.select({
       ios: {
@@ -105,7 +110,6 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   ratingText: {
-    color: COLORS.gold,
     fontSize: FONTS.sizes.xs + 1,
     fontWeight: FONTS.weights.bold,
   },
@@ -113,13 +117,11 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs + 2,
     fontSize: FONTS.sizes.sm + 1,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
     lineHeight: 17,
     minHeight: 34,
   },
   year: {
     marginTop: 2,
     fontSize: FONTS.sizes.xs + 1,
-    color: COLORS.textSecondary,
   },
 });

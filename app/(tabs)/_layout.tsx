@@ -2,22 +2,28 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, FONTS, RADIUS } from "../../src/constants/theme";
+import { FONTS, RADIUS } from "../../src/constants/theme";
+import { useThemeStore } from "../../src/store/themeStore";
 import { useWatchlistStore } from "../../src/store/watchlistStore";
 
 interface TabIconProps {
   emoji: string;
   label: string;
   focused: boolean;
+  focusedBg: string;
+  labelColor: string;
+  labelFocusedColor: string;
 }
 
-function TabIcon({ emoji, label, focused }: TabIconProps) {
+function TabIcon({ emoji, label, focused, focusedBg, labelColor, labelFocusedColor }: TabIconProps) {
   return (
     <View style={styles.iconWrapper}>
-      <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
+      <View style={[styles.iconContainer, focused && { backgroundColor: focusedBg }]}>
         <Text style={styles.emoji}>{emoji}</Text>
       </View>
-      <Text style={[styles.label, focused && styles.labelFocused]}>{label}</Text>
+      <Text style={[styles.label, { color: focused ? labelFocusedColor : labelColor }]}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -25,26 +31,40 @@ function TabIcon({ emoji, label, focused }: TabIconProps) {
 export default function TabLayout() {
   const { bottom } = useSafeAreaInsets();
   const items = useWatchlistStore((s) => s.items);
+  const colors = useThemeStore((s) => s.colors);
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: [
-          styles.tabBar,
-          {
-            height: 56 + bottom,
-            paddingBottom: bottom > 0 ? bottom : 8,
-          },
-        ],
+        tabBarStyle: {
+          backgroundColor: colors.card,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          paddingTop: 8,
+          elevation: 16,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
+          height: 56 + bottom,
+          paddingBottom: bottom > 0 ? bottom : 8,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🎬" label="Inicio" focused={focused} />
+            <TabIcon
+              emoji="🎬"
+              label="Inicio"
+              focused={focused}
+              focusedBg={colors.accent}
+              labelColor={colors.textHint}
+              labelFocusedColor={colors.textPrimary}
+            />
           ),
         }}
       />
@@ -52,9 +72,16 @@ export default function TabLayout() {
         name="watchlist"
         options={{
           tabBarBadge: items.length > 0 ? items.length : undefined,
-          tabBarBadgeStyle: { backgroundColor: COLORS.accent },
+          tabBarBadgeStyle: { backgroundColor: colors.accent },
           tabBarIcon: ({ focused }) => (
-            <TabIcon emoji="🔖" label="Watchlist" focused={focused} />
+            <TabIcon
+              emoji="🔖"
+              label="Watchlist"
+              focused={focused}
+              focusedBg={colors.accent}
+              labelColor={colors.textHint}
+              labelFocusedColor={colors.textPrimary}
+            />
           ),
         }}
       />
@@ -63,17 +90,6 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: COLORS.card,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingTop: 8,
-    elevation: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-  },
   iconWrapper: {
     alignItems: "center",
     justifyContent: "center",
@@ -86,19 +102,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  iconContainerFocused: {
-    backgroundColor: COLORS.accent,
-  },
   emoji: {
     fontSize: 18,
   },
   label: {
     fontSize: FONTS.sizes.xs,
     fontWeight: FONTS.weights.medium,
-    color: COLORS.textHint,
-  },
-  labelFocused: {
-    color: COLORS.textPrimary,
-    fontWeight: FONTS.weights.bold,
   },
 });

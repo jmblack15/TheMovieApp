@@ -7,7 +7,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import { COLORS, FONTS, SPACING } from '../constants/theme';
+import { useTheme } from '../hooks/useTheme';
+import { FONTS, SPACING } from '../constants/theme';
 import type { Movie } from '../types/index';
 import { OfflineBanner } from './common/OfflineBanner';
 import { MovieCard } from './movies/MovieCard';
@@ -37,6 +38,8 @@ export function MovieGrid({
   onMoviePress,
   emptyComponent,
 }: MovieGridProps) {
+  const { colors } = useTheme();
+
   const renderItem = useCallback(
     ({ item }: { item: Movie }) => (
       <MovieCard movie={item} onPress={onMoviePress} />
@@ -56,7 +59,7 @@ export function MovieGrid({
     return (
       <View testID="loading-state" style={styles.centered}>
         <Text style={styles.loadingEmoji}>🎬</Text>
-        <ActivityIndicator size="large" color={COLORS.accent} style={styles.spinner} />
+        <ActivityIndicator size="large" color={colors.accent} style={styles.spinner} />
       </View>
     );
   }
@@ -75,24 +78,24 @@ export function MovieGrid({
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={COLORS.accent}
-          colors={[COLORS.accent]}
+          tintColor={colors.accent}
+          colors={[colors.accent]}
         />
       }
       ListHeaderComponent={isOffline ? <OfflineBanner /> : null}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator style={styles.footer} color={COLORS.accent} />
+          <ActivityIndicator style={styles.footer} color={colors.accent} />
         ) : null
       }
       ListEmptyComponent={
         emptyComponent !== undefined ? emptyComponent : (
           <View testID="empty-state" style={styles.centered}>
             <Text style={styles.emptyEmoji}>🎬</Text>
-            <Text style={styles.emptyTitle}>
+            <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
               {isOffline ? 'Sin caché disponible' : 'Sin películas'}
             </Text>
-            <Text style={styles.emptySubtitle}>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
               {isOffline
                 ? 'Conéctate para descargar contenido'
                 : 'No se encontraron películas disponibles'}
@@ -130,13 +133,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   emptyTitle: {
-    color: COLORS.textPrimary,
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
     marginBottom: SPACING.xs,
   },
   emptySubtitle: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
     textAlign: 'center',
     paddingHorizontal: SPACING.xl,

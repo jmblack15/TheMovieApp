@@ -5,6 +5,7 @@ import "react-native-reanimated";
 import { useNetworkStatus } from "../src/hooks/useNetworkStatus";
 import { useNotificationDeepLink } from "../src/hooks/useNotificationDeepLink";
 import { requestNotificationPermissions } from "../src/services/notificationService";
+import { useThemeStore } from "../src/store/themeStore";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -13,11 +14,14 @@ export const unstable_settings = {
 const queryClient = new QueryClient();
 
 function AppProviders({ children }: { children: React.ReactNode }) {
+  const loadTheme = useThemeStore((s) => s.loadTheme);
   useNetworkStatus();
   useNotificationDeepLink();
+
   useEffect(() => {
+    loadTheme();
     requestNotificationPermissions();
-  }, []);
+  }, [loadTheme]);
 
   return <>{children}</>;
 }

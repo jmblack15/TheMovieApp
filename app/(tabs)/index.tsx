@@ -5,8 +5,10 @@ import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import { FilterInput } from '../../src/components/movies/FilterInput';
 import { MovieGrid } from '../../src/components/MovieGrid';
-import { COLORS, FONTS, SPACING } from '../../src/constants/theme';
+import { ThemeToggle } from '../../src/components/common/ThemeToggle';
+import { FONTS, SPACING } from '../../src/constants/theme';
 import { useMovieFilter } from '../../src/hooks/useMovieFilter';
+import { useTheme } from '../../src/hooks/useTheme';
 import { useOfflineStore } from '../../src/store/offlineStore';
 import type { Movie } from '../../src/types/index';
 
@@ -15,6 +17,7 @@ const ANDROID_EXTRA_TOP =
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
   const {
@@ -54,10 +57,10 @@ export default function HomeScreen() {
     isFiltering && !isLoadingFilter && movies.length === 0 ? (
       <View testID="empty-state" style={styles.emptyState}>
         <Text style={styles.emptyEmoji}>🔍</Text>
-        <Text style={styles.emptyTitle}>
+        <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
           Sin resultados para '{letterInput}'
         </Text>
-        <Text style={styles.emptySubtitle}>
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           La película debe comenzar con esa letra, tener mínimo 3 géneros y al
           menos 3 actrices y 3 actores en el reparto principal.
         </Text>
@@ -65,12 +68,20 @@ export default function HomeScreen() {
     ) : isFiltering && isLoadingFilter ? null : undefined;
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ExpoStatusBar style="light" />
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
+      <ExpoStatusBar style={colors.statusBar} />
 
       <View style={[styles.header, { paddingTop: ANDROID_EXTRA_TOP }]}>
-        <Text style={styles.title}>Películas</Text>
-        <Text style={styles.subtitle}>Descubre lo más popular</Text>
+        <View>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Películas</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            Descubre lo más popular
+          </Text>
+        </View>
+        <ThemeToggle />
       </View>
 
       <FilterInput
@@ -81,8 +92,8 @@ export default function HomeScreen() {
 
       {isLoadingFilter && (
         <View style={styles.filterLoading}>
-          <ActivityIndicator size="small" color={COLORS.textSecondary} />
-          <Text style={styles.filterLoadingText}>
+          <ActivityIndicator size="small" color={colors.textSecondary} />
+          <Text style={[styles.filterLoadingText, { color: colors.textSecondary }]}>
             Verificando géneros y reparto...
           </Text>
         </View>
@@ -107,9 +118,11 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
@@ -117,11 +130,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: FONTS.sizes.sm + 1,
-    color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },
   filterLoading: {
@@ -132,7 +143,6 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   filterLoadingText: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
   },
   emptyState: {
@@ -146,7 +156,6 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   emptyTitle: {
-    color: COLORS.textPrimary,
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
     marginBottom: SPACING.xs,
@@ -154,7 +163,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.lg,
   },
   emptySubtitle: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
     textAlign: 'center',
     paddingHorizontal: SPACING.xl,

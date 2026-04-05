@@ -24,7 +24,7 @@ const makeMovie = (id: number): Movie => ({
 
 beforeEach(() => {
   jest.useFakeTimers();
-  useWatchlistStore.setState({ items: [], _pendingTimers: new Map() });
+  useWatchlistStore.setState({ items: [] });
 });
 
 afterEach(() => {

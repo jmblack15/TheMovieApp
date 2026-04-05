@@ -65,6 +65,19 @@ jest.mock('@react-native-community/netinfo', () => ({
   ),
 }));
 
+// ── themeStore ────────────────────────────────────────────────────────────────
+jest.mock('./src/store/themeStore', () => ({
+  useThemeStore: jest.fn((selector: (s: unknown) => unknown) =>
+    selector({
+      mode: 'dark',
+      colors: require('./src/constants/theme').DARK_COLORS,
+      isDark: true,
+      setMode: jest.fn(),
+      loadTheme: jest.fn(),
+    }),
+  ),
+}));
+
 // ── expo-constants ────────────────────────────────────────────────────────────
 jest.mock('expo-constants', () => ({
   expoConfig: { extra: { tmdbApiKey: 'test-api-key' } },
