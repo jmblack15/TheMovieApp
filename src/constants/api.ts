@@ -48,7 +48,8 @@ export const STORAGE_KEYS = {
 } as const;
 
 export const WATCHLIST = {
-  notificationDelayMs: 3 * 60 * 1000, // 3 minutes
+  // notificationDelayMs: 3 * 60 * 1000, // 3 minutes
+  notificationDelayMs: 3000, // 3 minutes
   notificationTitle: '🎬 Tu watchlist te espera',
   notificationBody: (movieName: string) => `¿Listo para ver ${movieName}?`,
 } as const;
