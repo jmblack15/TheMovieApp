@@ -1,0 +1,58 @@
+{
+  "common": {
+    "loading": "Cargando películas...",
+    "error": "No se pudo cargar la película",
+    "noResults": "Sin resultados para \"{{letter}}\"",
+    "noMovies": "No hay películas disponibles",
+    "filterHint": "La película debe comenzar con esa letra, tener mínimo 3 géneros y al menos 3 actrices y 3 actores en el reparto principal.",
+    "offline": "Sin conexión — mostrando contenido guardado",
+    "lastSync": "Última sync: {{time}}",
+    "minutesAgo": "hace {{count}} min",
+    "hoursAgo": "hace {{count}} h"
+  },
+  "home": {
+    "title": "Películas",
+    "subtitle": "Descubre lo más popular",
+    "filterPlaceholder": "Filtrar por letra (ej: A)",
+    "filterLabel": "Filtrar películas por letra inicial",
+    "clearFilter": "Limpiar filtro",
+    "verifyingCast": "Verificando géneros y reparto...",
+    "loadMore": "Cargando más..."
+  },
+  "detail": {
+    "genres": "Géneros",
+    "overview": "Sinopsis",
+    "cast": "Reparto",
+    "rating": "Puntuación",
+    "year": "Año",
+    "runtime": "Duración",
+    "addToWatchlist": "Agregar a watchlist",
+    "removeFromWatchlist": "Quitar de watchlist",
+    "inWatchlist": "En watchlist"
+  },
+  "watchlist": {
+    "title": "Mi Watchlist",
+    "subtitle_one": "{{count}} película por ver",
+    "subtitle_other": "{{count}} películas por ver",
+    "empty": "Tu watchlist está vacía",
+    "emptySubtitle": "Agrega películas desde la pantalla principal para verlas después.",
+    "addedOn": "Agregada el {{date}}",
+    "removeTitle": "Quitar de watchlist",
+    "removeMessage": "¿Quitar \"{{title}}\" de tu lista?",
+    "cancel": "Cancelar",
+    "remove": "Quitar"
+  },
+  "notifications": {
+    "title": "🎬 Tu watchlist te espera",
+    "body": "¿Listo para ver {{movieName}}?"
+  },
+  "settings": {
+    "language": "Idioma",
+    "theme": "Tema",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "english": "Inglés",
+    "spanish": "Español"
+  }
+}

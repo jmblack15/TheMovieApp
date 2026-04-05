@@ -3,9 +3,11 @@ import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View } from '
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { FilterInput } from '../../src/components/movies/FilterInput';
 import { MovieGrid } from '../../src/components/MovieGrid';
 import { ThemeToggle } from '../../src/components/common/ThemeToggle';
+import { LanguageToggle } from '../../src/components/common/LanguageToggle';
 import { FONTS, SPACING } from '../../src/constants/theme';
 import { useMovieFilter } from '../../src/hooks/useMovieFilter';
 import { useTheme } from '../../src/hooks/useTheme';
@@ -18,6 +20,7 @@ const ANDROID_EXTRA_TOP =
 export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
   const {
@@ -58,11 +61,10 @@ export default function HomeScreen() {
       <View testID="empty-state" style={styles.emptyState}>
         <Text style={styles.emptyEmoji}>🔍</Text>
         <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-          Sin resultados para '{letterInput}'
+          {t('common.noResults', { letter: letterInput })}
         </Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-          La película debe comenzar con esa letra, tener mínimo 3 géneros y al
-          menos 3 actrices y 3 actores en el reparto principal.
+          {t('common.filterHint')}
         </Text>
       </View>
     ) : isFiltering && isLoadingFilter ? null : undefined;
@@ -76,12 +78,15 @@ export default function HomeScreen() {
 
       <View style={[styles.header, { paddingTop: ANDROID_EXTRA_TOP }]}>
         <View>
-          <Text style={[styles.title, { color: colors.textPrimary }]}>Películas</Text>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>{t('home.title')}</Text>
           <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            Descubre lo más popular
+            {t('home.subtitle')}
           </Text>
         </View>
-        <ThemeToggle />
+        <View style={styles.headerControls}>
+          <LanguageToggle />
+          <ThemeToggle />
+        </View>
       </View>
 
       <FilterInput
@@ -94,7 +99,7 @@ export default function HomeScreen() {
         <View style={styles.filterLoading}>
           <ActivityIndicator size="small" color={colors.textSecondary} />
           <Text style={[styles.filterLoadingText, { color: colors.textSecondary }]}>
-            Verificando géneros y reparto...
+            {t('home.verifyingCast')}
           </Text>
         </View>
       )}
@@ -134,6 +139,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: FONTS.sizes.sm + 1,
     marginTop: SPACING.xs,
+  },
+  headerControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
   },
   filterLoading: {
     flexDirection: 'row',

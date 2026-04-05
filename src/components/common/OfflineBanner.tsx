@@ -1,19 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 import { useOfflineStore } from '../../store/offlineStore';
 
-function formatRelativeTime(ts: number): string {
-  const minutes = Math.floor((Date.now() - ts) / 60000);
-  if (minutes < 60) return `hace ${minutes} min`;
-  return `hace ${Math.floor(minutes / 60)} h`;
-}
 
 export function OfflineBanner() {
   const isOnline = useOfflineStore((s) => s.isOnline);
   const lastSync = useOfflineStore((s) => s.lastSync);
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const opacity = useRef(new Animated.Value(1)).current;
 
   if (isOnline) return null;
@@ -38,10 +35,7 @@ export function OfflineBanner() {
   return (
     <View
       testID="offline-banner"
-      style={[
-        styles.container,
-        { borderColor: colors.offlineAmber },
-      ]}
+      style={[styles.container, { borderColor: colors.offlineAmber }]}
     >
       <Animated.View
         style={[styles.dot, { opacity, backgroundColor: colors.offlineDot }]}
@@ -49,11 +43,18 @@ export function OfflineBanner() {
       <Text style={styles.icon}>📡</Text>
       <View style={styles.textWrapper}>
         <Text style={[styles.text, { color: colors.offlineAmberLight }]}>
-          Sin conexión — mostrando caché
+          {t('common.offline')}
         </Text>
         {lastSync !== null && (
           <Text style={[styles.syncText, { color: colors.offlineAmber }]}>
-            Última sync: {formatRelativeTime(lastSync)}
+            {(() => {
+              const minutes = Math.floor((Date.now() - lastSync) / 60000);
+              const relTime =
+                minutes < 60
+                  ? t('common.minutesAgo', { count: minutes })
+                  : t('common.hoursAgo', { count: Math.floor(minutes / 60) });
+              return t('common.lastSync', { time: relTime });
+            })()}
           </Text>
         )}
       </View>

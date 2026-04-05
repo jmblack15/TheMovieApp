@@ -34,13 +34,13 @@ beforeEach(async () => {
 describe('WatchlistButton', () => {
   it("shows '+ Watchlist' when movie is not in list", () => {
     const { getByText } = render(<WatchlistButton movie={mockMovie} />);
-    expect(getByText('+ Watchlist')).toBeTruthy();
+    expect(getByText('+ detail.addToWatchlist')).toBeTruthy();
   });
 
   it("shows '✓ En watchlist' when movie is in list", () => {
     useWatchlistStore.setState({ items: [makeWatchlistItem(mockMovie)] });
     const { getByText } = render(<WatchlistButton movie={mockMovie} />);
-    expect(getByText('✓ En watchlist')).toBeTruthy();
+    expect(getByText('✓ detail.inWatchlist')).toBeTruthy();
   });
 
   it('adds movie to watchlist on press', async () => {

@@ -93,7 +93,7 @@ describe('DetailScreen', () => {
       fireEvent.press(getByTestId('watchlist-btn-1'));
     });
 
-    expect(getByText('✓ En watchlist')).toBeTruthy();
+    expect(getByText('✓ detail.inWatchlist')).toBeTruthy();
   });
 
   it('shows testID="detail-error" when API returns 500', async () => {

@@ -57,7 +57,7 @@ describe('WatchlistScreen', () => {
   it('shows correct count in header for single item', () => {
     useWatchlistStore.setState({ items: [mockItem] });
     const { getByText } = render(<WatchlistScreen />);
-    expect(getByText('1 película por ver')).toBeTruthy();
+    expect(getByText('watchlist.subtitle:{"count":1}')).toBeTruthy();
   });
 
   it('shows plural count in header for multiple items', () => {
@@ -68,12 +68,12 @@ describe('WatchlistScreen', () => {
     };
     useWatchlistStore.setState({ items: [mockItem, secondItem] });
     const { getByText } = render(<WatchlistScreen />);
-    expect(getByText('2 películas por ver')).toBeTruthy();
+    expect(getByText('watchlist.subtitle:{"count":2}')).toBeTruthy();
   });
 
   it('shows 0 películas por ver in header when empty', () => {
     const { getByText } = render(<WatchlistScreen />);
-    expect(getByText('0 películas por ver')).toBeTruthy();
+    expect(getByText('watchlist.subtitle:{"count":0}')).toBeTruthy();
   });
 
   it('remove button triggers Alert', () => {
@@ -82,7 +82,7 @@ describe('WatchlistScreen', () => {
     const { getByTestId } = render(<WatchlistScreen />);
     fireEvent.press(getByTestId('remove-btn-1'));
     expect(alertSpy).toHaveBeenCalledWith(
-      'Quitar de watchlist',
+      'watchlist.removeTitle',
       expect.stringContaining('Alpha'),
       expect.any(Array),
     );
