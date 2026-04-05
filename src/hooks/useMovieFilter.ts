@@ -11,7 +11,7 @@ const DEBOUNCE_MS = 400;
 export function useMovieFilter() {
   const [letterInput, setLetterInput] = useState('');
   const [debouncedLetter, setDebouncedLetter] = useState('');
-  const debounceTimer = useRef<ReturnType<typeof setTimeout>>();
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const {
     movies,

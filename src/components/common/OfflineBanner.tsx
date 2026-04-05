@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, Text, View } from 'react-native';
-import { COLORS, FONTS, RADIUS, SPACING } from '../../constants/theme';
+import { useTheme } from '../../hooks/useTheme';
+import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 import { useOfflineStore } from '../../store/offlineStore';
 
 function formatRelativeTime(ts: number): string {
@@ -12,6 +13,7 @@ function formatRelativeTime(ts: number): string {
 export function OfflineBanner() {
   const isOnline = useOfflineStore((s) => s.isOnline);
   const lastSync = useOfflineStore((s) => s.lastSync);
+  const { colors } = useTheme();
   const opacity = useRef(new Animated.Value(1)).current;
 
   if (isOnline) return null;
@@ -34,13 +36,23 @@ export function OfflineBanner() {
   }, [opacity]);
 
   return (
-    <View testID="offline-banner" style={styles.container}>
-      <Animated.View style={[styles.dot, { opacity }]} />
+    <View
+      testID="offline-banner"
+      style={[
+        styles.container,
+        { borderColor: colors.offlineAmber },
+      ]}
+    >
+      <Animated.View
+        style={[styles.dot, { opacity, backgroundColor: colors.offlineDot }]}
+      />
       <Text style={styles.icon}>📡</Text>
       <View style={styles.textWrapper}>
-        <Text style={styles.text}>Sin conexión — mostrando caché</Text>
+        <Text style={[styles.text, { color: colors.offlineAmberLight }]}>
+          Sin conexión — mostrando caché
+        </Text>
         {lastSync !== null && (
-          <Text style={styles.syncText}>
+          <Text style={[styles.syncText, { color: colors.offlineAmber }]}>
             Última sync: {formatRelativeTime(lastSync)}
           </Text>
         )}
@@ -55,7 +67,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#2D1F00',
     borderWidth: 1,
-    borderColor: COLORS.offlineAmber,
     borderRadius: RADIUS.md,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,
@@ -67,7 +78,6 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.offlineDot,
   },
   icon: {
     fontSize: FONTS.sizes.md,
@@ -76,12 +86,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   text: {
-    color: COLORS.offlineAmberLight,
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.medium,
   },
   syncText: {
-    color: COLORS.offlineAmber,
     fontSize: FONTS.sizes.xs,
     marginTop: 2,
   },

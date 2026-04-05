@@ -39,7 +39,7 @@ const mockItem: WatchlistItem = {
 };
 
 beforeEach(() => {
-  useWatchlistStore.setState({ items: [], _pendingTimers: new Map() });
+  useWatchlistStore.setState({ items: [] });
 });
 
 describe('WatchlistScreen', () => {
@@ -49,13 +49,13 @@ describe('WatchlistScreen', () => {
   });
 
   it('shows movie title when items are preset', () => {
-    useWatchlistStore.setState({ items: [mockItem], _pendingTimers: new Map() });
+    useWatchlistStore.setState({ items: [mockItem] });
     const { getByText } = render(<WatchlistScreen />);
     expect(getByText('Alpha')).toBeTruthy();
   });
 
   it('shows correct count in header for single item', () => {
-    useWatchlistStore.setState({ items: [mockItem], _pendingTimers: new Map() });
+    useWatchlistStore.setState({ items: [mockItem] });
     const { getByText } = render(<WatchlistScreen />);
     expect(getByText('1 película por ver')).toBeTruthy();
   });
@@ -66,10 +66,7 @@ describe('WatchlistScreen', () => {
       addedAt: '2024-06-02T10:00:00.000Z',
       movie: { ...mockMovie, id: 2, title: 'Bravo' },
     };
-    useWatchlistStore.setState({
-      items: [mockItem, secondItem],
-      _pendingTimers: new Map(),
-    });
+    useWatchlistStore.setState({ items: [mockItem, secondItem] });
     const { getByText } = render(<WatchlistScreen />);
     expect(getByText('2 películas por ver')).toBeTruthy();
   });
@@ -81,7 +78,7 @@ describe('WatchlistScreen', () => {
 
   it('remove button triggers Alert', () => {
     const alertSpy = jest.spyOn(Alert, 'alert');
-    useWatchlistStore.setState({ items: [mockItem], _pendingTimers: new Map() });
+    useWatchlistStore.setState({ items: [mockItem] });
     const { getByTestId } = render(<WatchlistScreen />);
     fireEvent.press(getByTestId('remove-btn-1'));
     expect(alertSpy).toHaveBeenCalledWith(
@@ -92,7 +89,7 @@ describe('WatchlistScreen', () => {
   });
 
   it('row press navigates to /movie/[id]', () => {
-    useWatchlistStore.setState({ items: [mockItem], _pendingTimers: new Map() });
+    useWatchlistStore.setState({ items: [mockItem] });
     const { getByText } = render(<WatchlistScreen />);
     fireEvent.press(getByText('Alpha'));
     expect(mockPush).toHaveBeenCalledWith({

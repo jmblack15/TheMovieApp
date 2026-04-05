@@ -9,6 +9,7 @@ import {
 import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useMovieCredits, useMovieDetails } from '../../src/hooks/useMovies';
 import { useWatchlistStore } from '../../src/store/watchlistStore';
+import { useTheme } from '../../src/hooks/useTheme';
 import { BackdropHeader } from '../../src/components/movies/BackdropHeader';
 import { CastCarousel } from '../../src/components/movies/CastCarousel';
 import { WatchlistButton } from '../../src/components/common/WatchlistButton';
@@ -22,6 +23,7 @@ const POSTER_GAP = 12;
 export default function MovieDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string; title?: string }>();
   const movieId = Number(id);
+  const { colors } = useTheme();
 
   const navigation = useNavigation();
   const markAsOpened = useWatchlistStore((s) => s.markAsOpened);
@@ -41,17 +43,19 @@ export default function MovieDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator testID="detail-loading" size="large" color="#E50914" />
+      <View style={[styles.centered, { backgroundColor: colors.background }]}>
+        <ActivityIndicator testID="detail-loading" size="large" color={colors.accent} />
       </View>
     );
   }
 
   if (isError || !movie) {
     return (
-      <View testID="detail-error" style={styles.centered}>
+      <View testID="detail-error" style={[styles.centered, { backgroundColor: colors.background }]}>
         <Text style={styles.errorEmoji}>😕</Text>
-        <Text style={styles.errorText}>Could not load movie</Text>
+        <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+          Could not load movie
+        </Text>
       </View>
     );
   }
@@ -61,7 +65,7 @@ export default function MovieDetailScreen() {
   return (
     <ScrollView
       testID="detail-screen"
-      style={styles.screen}
+      style={[styles.screen, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
@@ -76,19 +80,19 @@ export default function MovieDetailScreen() {
       <View style={styles.heroRow}>
         <View style={styles.heroSpacer} />
         <View style={styles.heroInfo}>
-          <Text style={styles.title} numberOfLines={3}>
+          <Text style={[styles.title, { color: colors.textPrimary }]} numberOfLines={3}>
             {movie.title}
           </Text>
           {!!movie.tagline && (
-            <Text style={styles.tagline} numberOfLines={2}>
+            <Text style={[styles.tagline, { color: colors.textSecondary }]} numberOfLines={2}>
               {movie.tagline}
             </Text>
           )}
           <View style={styles.badgeRow}>
-            <Badge text={`⭐ ${formatRating(movie.vote_average)}`} />
-            <Badge text={formatYear(movie.release_date)} />
-            {!!movie.runtime && <Badge text={formatRuntime(movie.runtime)} />}
-            {!!movie.status && <Badge text={movie.status} />}
+            <Badge text={`⭐ ${formatRating(movie.vote_average)}`} colors={colors} />
+            <Badge text={formatYear(movie.release_date)} colors={colors} />
+            {!!movie.runtime && <Badge text={formatRuntime(movie.runtime)} colors={colors} />}
+            {!!movie.status && <Badge text={movie.status} colors={colors} />}
           </View>
         </View>
       </View>
@@ -96,11 +100,19 @@ export default function MovieDetailScreen() {
       {/* C) Genres */}
       {movie.genres && movie.genres.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Genres</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Genres</Text>
           <View style={styles.genreRow}>
             {movie.genres.map((genre) => (
-              <View key={genre.id} style={styles.genrePill}>
-                <Text style={styles.genreText}>{genre.name}</Text>
+              <View
+                key={genre.id}
+                style={[
+                  styles.genrePill,
+                  { backgroundColor: colors.card, borderColor: colors.border },
+                ]}
+              >
+                <Text style={[styles.genreText, { color: colors.textSecondary }]}>
+                  {genre.name}
+                </Text>
               </View>
             ))}
           </View>
@@ -110,17 +122,19 @@ export default function MovieDetailScreen() {
       {/* D) Overview */}
       {!!movie.overview && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Overview</Text>
-          <Text style={styles.overview}>{movie.overview}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Overview</Text>
+          <Text style={[styles.overview, { color: colors.textSecondary }]}>{movie.overview}</Text>
         </View>
       )}
 
       {/* E) Cast */}
       {(loadingCredits || cast.length > 0) && (
         <View style={[styles.section, styles.castSection]}>
-          <Text style={[styles.sectionTitle, styles.castTitle]}>Cast</Text>
+          <Text style={[styles.sectionTitle, styles.castTitle, { color: colors.textPrimary }]}>
+            Cast
+          </Text>
           {loadingCredits ? (
-            <ActivityIndicator color="#E50914" />
+            <ActivityIndicator color={colors.accent} />
           ) : (
             <CastCarousel cast={cast} />
           )}
@@ -135,10 +149,10 @@ export default function MovieDetailScreen() {
   );
 }
 
-function Badge({ text }: { text: string }) {
+function Badge({ text, colors }: { text: string; colors: { card: string; textSecondary: string } }) {
   return (
-    <View style={styles.badge}>
-      <Text style={styles.badgeText}>{text}</Text>
+    <View style={[styles.badge, { backgroundColor: colors.card }]}>
+      <Text style={[styles.badgeText, { color: colors.textSecondary }]}>{text}</Text>
     </View>
   );
 }
@@ -146,7 +160,6 @@ function Badge({ text }: { text: string }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#0D0D1A',
   },
   content: {
     paddingBottom: 40,
@@ -155,14 +168,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0D0D1A',
   },
   errorEmoji: {
     fontSize: 40,
     marginBottom: 8,
   },
   errorText: {
-    color: '#9B9B9B',
     fontSize: 16,
   },
   heroRow: {
@@ -177,12 +188,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '800',
   },
   tagline: {
-    color: '#9B9B9B',
     fontSize: 12,
     fontStyle: 'italic',
     marginTop: 4,
@@ -194,13 +203,11 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   badge: {
-    backgroundColor: '#1a1a2e',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   badgeText: {
-    color: '#C0C0C0',
     fontSize: 12,
     fontWeight: '600',
   },
@@ -215,7 +222,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   sectionTitle: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
     marginBottom: 10,
@@ -226,20 +232,16 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   genrePill: {
-    backgroundColor: '#1F1F35',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#2a2a4a',
     paddingHorizontal: 12,
     paddingVertical: 5,
   },
   genreText: {
-    color: '#C0C0C0',
     fontSize: 12,
     fontWeight: '500',
   },
   overview: {
-    color: '#C0C0C0',
     fontSize: 14,
     lineHeight: 22,
   },

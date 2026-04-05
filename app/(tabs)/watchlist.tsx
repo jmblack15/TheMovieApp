@@ -11,12 +11,14 @@ import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useWatchlistStore } from '../../src/store/watchlistStore';
+import { useTheme } from '../../src/hooks/useTheme';
 import { buildPosterUrl, formatRating, formatYear } from '../../src/utils/image';
-import { COLORS, FONTS, RADIUS, SPACING } from '../../src/constants/theme';
+import { FONTS, RADIUS, SPACING } from '../../src/constants/theme';
 import type { WatchlistItem } from '../../src/types/index';
 
 export default function WatchlistScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const items = useWatchlistStore((s) => s.items);
   const loadWatchlist = useWatchlistStore((s) => s.loadWatchlist);
   const removeMovie = useWatchlistStore((s) => s.removeMovie);
@@ -63,52 +65,58 @@ export default function WatchlistScreen() {
 
       return (
         <Pressable
-          style={styles.row}
+          style={[styles.row, { borderBottomColor: colors.border }]}
           onPress={() => handleRowPress(item)}
           android_ripple={{ color: 'rgba(255,255,255,0.05)' }}
         >
           {posterUrl ? (
             <Image
               source={{ uri: posterUrl ?? undefined }}
-              style={styles.poster}
+              style={[styles.poster, { backgroundColor: colors.card }]}
               contentFit="cover"
             />
           ) : (
-            <View style={[styles.poster, styles.posterFallback]}>
+            <View style={[styles.poster, styles.posterFallback, { backgroundColor: colors.card }]}>
               <Text style={styles.posterFallbackEmoji}>🎬</Text>
             </View>
           )}
 
           <View style={styles.info}>
-            <Text style={styles.movieTitle} numberOfLines={2}>
+            <Text style={[styles.movieTitle, { color: colors.textPrimary }]} numberOfLines={2}>
               {item.movie.title}
             </Text>
-            <Text style={styles.meta}>
+            <Text style={[styles.meta, { color: colors.textSecondary }]}>
               {formatYear(item.movie.release_date)} · ⭐{' '}
               {formatRating(item.movie.vote_average)}
             </Text>
-            <Text style={styles.addedDate}>Agregado: {addedDate}</Text>
+            <Text style={[styles.addedDate, { color: colors.textHint }]}>
+              Agregado: {addedDate}
+            </Text>
           </View>
 
           <Pressable
             testID={`remove-btn-${item.movie.id}`}
-            style={styles.removeBtn}
+            style={[styles.removeBtn, { backgroundColor: colors.border }]}
             onPress={() => handleRemove(item)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={styles.removeText}>✕</Text>
+            <Text style={[styles.removeText, { color: colors.textSecondary }]}>✕</Text>
           </Pressable>
         </Pressable>
       );
     },
-    [handleRowPress, handleRemove],
+    [handleRowPress, handleRemove, colors],
   );
 
   return (
-    <SafeAreaView testID="watchlist-screen" style={styles.container} edges={['top']}>
+    <SafeAreaView
+      testID="watchlist-screen"
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Mi Watchlist</Text>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Mi Watchlist</Text>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           {items.length} película{items.length !== 1 ? 's' : ''} por ver
         </Text>
       </View>
@@ -122,7 +130,9 @@ export default function WatchlistScreen() {
         ListEmptyComponent={
           <View testID="watchlist-empty" style={styles.empty}>
             <Text style={styles.emptyEmoji}>🎞️</Text>
-            <Text style={styles.emptyText}>Tu watchlist está vacía</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              Tu watchlist está vacía
+            </Text>
           </View>
         }
       />
@@ -133,7 +143,6 @@ export default function WatchlistScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
     paddingHorizontal: SPACING.lg,
@@ -143,11 +152,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: FONTS.weights.bold,
-    color: COLORS.textPrimary,
   },
   headerSubtitle: {
     fontSize: FONTS.sizes.sm + 1,
-    color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },
   listContent: {
@@ -160,14 +167,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: SPACING.md,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
     gap: SPACING.md,
   },
   poster: {
     width: 64,
     height: 96,
     borderRadius: RADIUS.sm,
-    backgroundColor: COLORS.card,
   },
   posterFallback: {
     alignItems: 'center',
@@ -181,28 +186,23 @@ const styles = StyleSheet.create({
     gap: SPACING.xs,
   },
   movieTitle: {
-    color: COLORS.textPrimary,
     fontSize: FONTS.sizes.md,
     fontWeight: FONTS.weights.bold,
   },
   meta: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
   },
   addedDate: {
-    color: COLORS.textHint,
     fontSize: FONTS.sizes.xs + 1,
   },
   removeBtn: {
     width: 28,
     height: 28,
     borderRadius: RADIUS.full,
-    backgroundColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   removeText: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.sm,
     fontWeight: FONTS.weights.bold,
   },
@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     fontSize: 56,
   },
   emptyText: {
-    color: COLORS.textSecondary,
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
   },
