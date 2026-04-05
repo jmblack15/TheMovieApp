@@ -10,8 +10,11 @@ function formatRelativeTime(ts: number): string {
 }
 
 export function OfflineBanner() {
+  const isOnline = useOfflineStore((s) => s.isOnline);
   const lastSync = useOfflineStore((s) => s.lastSync);
   const opacity = useRef(new Animated.Value(1)).current;
+
+  if (isOnline) return null;
 
   useEffect(() => {
     Animated.loop(

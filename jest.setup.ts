@@ -57,6 +57,14 @@ jest.mock('expo-router', () => ({
   Tabs: { Screen: 'Screen' },
 }));
 
+// ── @react-native-community/netinfo ──────────────────────────────────────────
+jest.mock('@react-native-community/netinfo', () => ({
+  addEventListener: jest.fn(() => jest.fn()),
+  fetch: jest.fn(() =>
+    Promise.resolve({ isConnected: true, isInternetReachable: true }),
+  ),
+}));
+
 // ── expo-constants ────────────────────────────────────────────────────────────
 jest.mock('expo-constants', () => ({
   expoConfig: { extra: { tmdbApiKey: 'test-api-key' } },
