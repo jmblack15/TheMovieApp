@@ -82,7 +82,7 @@ describe('DetailScreen', () => {
     await waitFor(() => expect(markAsOpened).toHaveBeenCalledWith(1));
   });
 
-  it('watchlist button toggles to "✓ En watchlist" on press', async () => {
+  it('watchlist button toggles to "In watchlist" on press', async () => {
     const { getByTestId, getByText } = render(<MovieDetailScreen />, {
       wrapper: makeWrapper(),
     });
@@ -93,7 +93,7 @@ describe('DetailScreen', () => {
       fireEvent.press(getByTestId('watchlist-btn-1'));
     });
 
-    expect(getByText('✓ detail.inWatchlist')).toBeTruthy();
+    expect(getByText('detail.inWatchlist')).toBeTruthy();
   });
 
   it('shows testID="detail-error" when API returns 500', async () => {

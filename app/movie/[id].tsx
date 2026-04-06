@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
@@ -15,6 +16,7 @@ import { BackdropHeader } from '../../src/components/movies/BackdropHeader';
 import { CastCarousel } from '../../src/components/movies/CastCarousel';
 import { WatchlistButton } from '../../src/components/common/WatchlistButton';
 import { formatRating, formatRuntime, formatYear } from '../../src/utils/image';
+import { FONTS, RADIUS, SPACING } from '../../src/constants/theme';
 
 const POSTER_HEIGHT = 165;
 const POSTER_OVERLAP = 48;
@@ -54,7 +56,7 @@ export default function MovieDetailScreen() {
   if (isError || !movie) {
     return (
       <View testID="detail-error" style={[styles.centered, { backgroundColor: colors.background }]}>
-        <Text style={styles.errorEmoji}>😕</Text>
+        <Ionicons name="alert-circle-outline" size={48} color={colors.textHint} />
         <Text style={[styles.errorText, { color: colors.textSecondary }]}>
           {t('common.error')}
         </Text>
@@ -71,14 +73,14 @@ export default function MovieDetailScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* A) Backdrop + Poster */}
+      {/* Backdrop + Poster */}
       <BackdropHeader
         backdropPath={movie.backdrop_path}
         posterPath={movie.poster_path}
         title={movie.title}
       />
 
-      {/* B) Hero info — right of poster, same row */}
+      {/* Hero info — right of poster */}
       <View style={styles.heroRow}>
         <View style={styles.heroSpacer} />
         <View style={styles.heroInfo}>
@@ -91,15 +93,14 @@ export default function MovieDetailScreen() {
             </Text>
           )}
           <View style={styles.badgeRow}>
-            <Badge text={`⭐ ${formatRating(movie.vote_average)}`} colors={colors} />
+            <Badge text={`★ ${formatRating(movie.vote_average)}`} colors={colors} highlight />
             <Badge text={formatYear(movie.release_date)} colors={colors} />
             {!!movie.runtime && <Badge text={formatRuntime(movie.runtime)} colors={colors} />}
-            {!!movie.status && <Badge text={movie.status} colors={colors} />}
           </View>
         </View>
       </View>
 
-      {/* C) Genres */}
+      {/* Genres */}
       {movie.genres && movie.genres.length > 0 && (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
@@ -123,7 +124,7 @@ export default function MovieDetailScreen() {
         </View>
       )}
 
-      {/* D) Overview */}
+      {/* Overview */}
       {!!movie.overview && (
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
@@ -133,7 +134,7 @@ export default function MovieDetailScreen() {
         </View>
       )}
 
-      {/* E) Cast */}
+      {/* Cast */}
       {(loadingCredits || cast.length > 0) && (
         <View style={[styles.section, styles.castSection]}>
           <Text style={[styles.sectionTitle, styles.castTitle, { color: colors.textPrimary }]}>
@@ -147,7 +148,7 @@ export default function MovieDetailScreen() {
         </View>
       )}
 
-      {/* F) Watchlist button */}
+      {/* Watchlist button */}
       <View style={styles.watchlistWrapper}>
         <WatchlistButton movie={movie} size="large" />
       </View>
@@ -155,10 +156,25 @@ export default function MovieDetailScreen() {
   );
 }
 
-function Badge({ text, colors }: { text: string; colors: { card: string; textSecondary: string } }) {
+function Badge({
+  text,
+  colors,
+  highlight,
+}: {
+  text: string;
+  colors: { card: string; textSecondary: string; gold: string };
+  highlight?: boolean;
+}) {
   return (
     <View style={[styles.badge, { backgroundColor: colors.card }]}>
-      <Text style={[styles.badgeText, { color: colors.textSecondary }]}>{text}</Text>
+      <Text
+        style={[
+          styles.badgeText,
+          { color: highlight ? colors.gold : colors.textSecondary },
+        ]}
+      >
+        {text}
+      </Text>
     </View>
   );
 }
@@ -168,24 +184,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingBottom: 40,
+    paddingBottom: 48,
   },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  errorEmoji: {
-    fontSize: 40,
-    marginBottom: 8,
+    gap: SPACING.md,
   },
   errorText: {
-    fontSize: 16,
+    fontSize: FONTS.sizes.md,
   },
   heroRow: {
     flexDirection: 'row',
     marginTop: -(POSTER_HEIGHT - POSTER_OVERLAP),
-    paddingHorizontal: 16,
+    paddingHorizontal: SPACING.lg,
   },
   heroSpacer: {
     width: POSTER_WIDTH + POSTER_GAP,
@@ -194,65 +207,67 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: FONTS.sizes.lg + 2,
+    fontWeight: FONTS.weights.black,
+    letterSpacing: -0.3,
   },
   tagline: {
-    fontSize: 12,
+    fontSize: FONTS.sizes.sm,
     fontStyle: 'italic',
-    marginTop: 4,
+    marginTop: SPACING.xs,
   },
   badgeRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 4,
-    marginTop: 6,
+    gap: SPACING.xs,
+    marginTop: SPACING.sm,
   },
   badge: {
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderRadius: RADIUS.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: 3,
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.bold,
   },
   section: {
-    marginTop: 24,
-    paddingHorizontal: 16,
+    marginTop: SPACING.xl,
+    paddingHorizontal: SPACING.lg,
   },
   castSection: {
     paddingHorizontal: 0,
   },
   castTitle: {
-    paddingHorizontal: 16,
+    paddingHorizontal: SPACING.lg,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 10,
+    fontSize: FONTS.sizes.lg,
+    fontWeight: FONTS.weights.bold,
+    marginBottom: SPACING.sm,
+    letterSpacing: -0.2,
   },
   genreRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: SPACING.sm,
   },
   genrePill: {
-    borderRadius: 20,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    borderRadius: RADIUS.full,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs + 1,
   },
   genreText: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.medium,
   },
   overview: {
-    fontSize: 14,
+    fontSize: FONTS.sizes.md,
     lineHeight: 22,
   },
   watchlistWrapper: {
-    marginHorizontal: 16,
-    marginTop: 28,
+    marginHorizontal: SPACING.lg,
+    marginTop: SPACING.xl + SPACING.sm,
   },
 });

@@ -1,8 +1,11 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { memo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import type { Cast } from '../../types/index';
+import { useTheme } from '../../hooks/useTheme';
 import { buildProfileUrl } from '../../utils/image';
+import { FONTS, SPACING } from '../../constants/theme';
 
 interface CastCarouselProps {
   cast: Cast[];
@@ -13,6 +16,7 @@ interface CastItemProps {
 }
 
 const CastItem = memo(function CastItem({ actor }: CastItemProps) {
+  const { colors } = useTheme();
   const profileUri = actor.profile_path
     ? buildProfileUrl(actor.profile_path, 'medium')
     : null;
@@ -28,14 +32,14 @@ const CastItem = memo(function CastItem({ actor }: CastItemProps) {
           priority="low"
         />
       ) : (
-        <View style={styles.avatarFallback}>
-          <Text style={styles.avatarFallbackEmoji}>👤</Text>
+        <View testID="avatar-placeholder" style={[styles.avatarFallback, { backgroundColor: colors.card }]}>
+          <Ionicons name="person" size={28} color={colors.textHint} />
         </View>
       )}
-      <Text style={styles.name} numberOfLines={2}>
+      <Text style={[styles.name, { color: colors.textPrimary }]} numberOfLines={2}>
         {actor.name}
       </Text>
-      <Text style={styles.character} numberOfLines={2}>
+      <Text style={[styles.character, { color: colors.textSecondary }]} numberOfLines={2}>
         {actor.character}
       </Text>
     </View>
@@ -63,11 +67,11 @@ export function CastCarousel({ cast }: CastCarouselProps) {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    paddingHorizontal: 16,
-    gap: 12,
+    paddingHorizontal: SPACING.lg,
+    gap: SPACING.md,
   },
   item: {
-    width: 90,
+    width: 88,
     alignItems: 'center',
   },
   avatar: {
@@ -79,23 +83,17 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#1a1a2e',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarFallbackEmoji: {
-    fontSize: 28,
-  },
   name: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: FONTS.sizes.xs + 1,
+    fontWeight: FONTS.weights.bold,
     textAlign: 'center',
-    marginTop: 6,
+    marginTop: SPACING.xs + 2,
   },
   character: {
-    color: '#9B9B9B',
-    fontSize: 10,
+    fontSize: FONTS.sizes.xs,
     textAlign: 'center',
     marginTop: 2,
   },

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback } from 'react';
 import {
   ActivityIndicator,
@@ -7,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../hooks/useTheme';
 import { FONTS, SPACING } from '../constants/theme';
 import type { Movie } from '../types/index';
@@ -39,6 +41,7 @@ export function MovieGrid({
   emptyComponent,
 }: MovieGridProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const renderItem = useCallback(
     ({ item }: { item: Movie }) => (
@@ -58,8 +61,7 @@ export function MovieGrid({
   if (isLoading) {
     return (
       <View testID="loading-state" style={styles.centered}>
-        <Text style={styles.loadingEmoji}>🎬</Text>
-        <ActivityIndicator size="large" color={colors.accent} style={styles.spinner} />
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -91,14 +93,9 @@ export function MovieGrid({
       ListEmptyComponent={
         emptyComponent !== undefined ? emptyComponent : (
           <View testID="empty-state" style={styles.centered}>
-            <Text style={styles.emptyEmoji}>🎬</Text>
+            <Ionicons name="film-outline" size={48} color={colors.textHint} style={styles.emptyIcon} />
             <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
-              {isOffline ? 'Sin caché disponible' : 'Sin películas'}
-            </Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-              {isOffline
-                ? 'Conéctate para descargar contenido'
-                : 'No se encontraron películas disponibles'}
+              {t('common.noMovies')}
             </Text>
           </View>
         )
@@ -118,28 +115,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 80,
   },
-  loadingEmoji: {
-    fontSize: 48,
-    marginBottom: SPACING.lg,
-  },
-  spinner: {
-    marginTop: SPACING.sm,
+  emptyIcon: {
+    marginBottom: SPACING.md,
   },
   footer: {
     paddingVertical: SPACING.lg,
-  },
-  emptyEmoji: {
-    fontSize: 56,
-    marginBottom: SPACING.md,
   },
   emptyTitle: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
     marginBottom: SPACING.xs,
-  },
-  emptySubtitle: {
-    fontSize: FONTS.sizes.sm,
-    textAlign: 'center',
-    paddingHorizontal: SPACING.xl,
   },
 });

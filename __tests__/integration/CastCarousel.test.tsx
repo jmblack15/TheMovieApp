@@ -57,14 +57,14 @@ describe('CastCarousel', () => {
     expect(getByText('Character 2')).toBeTruthy();
   });
 
-  it('shows 👤 placeholder when profile_path is null', () => {
+  it('shows avatar placeholder when profile_path is null', () => {
     // buildCast: odd indices (0-based) → null profile_path → actor id 2 has null
     const cast = buildCast(2); // actor 1: has profile, actor 2: null
-    const { getAllByText } = render(<CastCarousel cast={cast} />);
-    expect(getAllByText('👤').length).toBeGreaterThan(0);
+    const { getAllByTestId } = render(<CastCarousel cast={cast} />);
+    expect(getAllByTestId('avatar-placeholder').length).toBeGreaterThan(0);
   });
 
-  it('does NOT show 👤 when all actors have profile_path', () => {
+  it('does NOT show avatar placeholder when all actors have profile_path', () => {
     const cast: Cast[] = [
       {
         id: 99,
@@ -76,8 +76,8 @@ describe('CastCarousel', () => {
         known_for_department: 'Acting',
       },
     ];
-    const { queryByText } = render(<CastCarousel cast={cast} />);
-    expect(queryByText('👤')).toBeNull();
+    const { queryByTestId } = render(<CastCarousel cast={cast} />);
+    expect(queryByTestId('avatar-placeholder')).toBeNull();
   });
 
   it('renders a horizontal FlatList', () => {
