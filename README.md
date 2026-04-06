@@ -22,19 +22,19 @@ A React Native app to explore movies using The Movie DB API
 ### 🍎 iOS (Simulator)
 This build is specifically compiled for **x86_64/arm64 architectures** to run on the **iOS Simulator** (macOS). It does not require an Apple Developer account or physical device registration.
 
-* **Download Link:** [The Movie App - iOS Simulator Build](REEMPLAZAR_CON_TU_LINK_DE_IOS_CUANDO_TERMINE)
+* **Direct Download:** [Download MovieExplorer_Simulator.tar.gz](https://expo.dev/artifacts/eas/28f3924e-c181-4930-9895-8f4a7ac10891.tar.gz)
 * **Format:** `.tar.gz` (Compressed App Bundle)
 * **Requirements:** A Mac with Xcode installed.
 
 #### 🛠️ Installation Steps:
 1.  **Download** the `.tar.gz` file from the link above.
 2.  **Extract** the file on your Mac to reveal the `TheMovieApp.app` folder.
-3.  **Open your iOS Simulator** (via Xcode or `npx expo start`).
+3.  **Open your iOS Simulator** (via Xcode or by running `npx expo start`).
 4.  **Drag and drop** the `TheMovieApp.app` folder directly onto the Simulator screen.
 5.  The app icon will appear on the home screen. Tap it to launch.
 
 > [!TIP]
-> If you have **Expo Orbit** installed, you can simply click the "Open in Orbit" button on the Expo build page for a one-click installation.
+> If you have **Expo Orbit** installed on your Mac, you can simply open the [Build Details Page](https://expo.dev/accounts/jmblack15/projects/the-movie-app/builds/28f3924e-c181-4930-9895-8f4a7ac10891) and click **"Open in Orbit"** for a one-click installation.
 
 ---
 
