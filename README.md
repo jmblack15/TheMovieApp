@@ -7,40 +7,6 @@ A React Native app to explore movies using The Movie DB API
 ![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat&logo=react&logoColor=61DAFB)
 ![Tests](https://img.shields.io/badge/Tests-149%20passing-success?style=flat)
 
-
----
-
-## 📱 Mobile Builds (Preview)
-
-To facilitate the testing process, I have generated standalone builds for both platforms. These versions are **pre-configured with the TMDB API Key** and environment variables.
-
-### 🤖 Android (Physical Device)
-* **Download Link:** [The Movie App - Android APK](https://expo.dev/accounts/jmblack15/projects/the-movie-app/builds/a2333b17-0161-4a01-9c3d-b76dce7c3438)
-* **Format:** `.apk`
-* **Installation:** Download the file and select "Install Anyway" if prompted by Play Protect (standard for development builds).
-
-> [!IMPORTANT]
-> **Android Security Notice**
-> * **Android 8.0 (API 26) or higher:** You must enable "Install unknown apps" for your specific browser (e.g., Chrome) in *Settings > Apps > Special app access*.
-> * **Android 7.1.1 (API 25) or lower:** Enable "Unknown sources" in *Settings > Security*.
-
-### 🍎 iOS (Simulator)
-This build is specifically compiled for **x86_64/arm64 architectures** to run on the **iOS Simulator** (macOS). It does not require an Apple Developer account or physical device registration.
-
-* **Download Link:** [The Movie App - iOS Simulator Build](REEMPLAZAR_CON_TU_LINK_DE_IOS_CUANDO_TERMINE)
-* **Format:** `.tar.gz` (Compressed App Bundle)
-* **Requirements:** A Mac with Xcode installed.
-
-#### 🛠️ Installation Steps:
-1.  **Download** the `.tar.gz` file from the link above.
-2.  **Extract** the file on your Mac to reveal the `TheMovieApp.app` folder.
-3.  **Open your iOS Simulator** (via Xcode or `npx expo start`).
-4.  **Drag and drop** the `TheMovieApp.app` folder directly onto the Simulator screen.
-5.  The app icon will appear on the home screen. Tap it to launch.
-
-> [!TIP]
-> If you have **Expo Orbit** installed, you can simply click the "Open in Orbit" button on the Expo build page for a one-click installation.
-
 ---
 
 ### 🤖 Android (Physical Device)
