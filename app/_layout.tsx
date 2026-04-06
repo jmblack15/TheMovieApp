@@ -1,5 +1,6 @@
 import '../src/i18n';
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "../src/i18n";
 import { Stack } from "expo-router";
 import { useEffect } from "react";
 import "react-native-reanimated";
@@ -14,7 +15,6 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-const queryClient = new QueryClient();
 
 function AppProviders({ children }: { children: React.ReactNode }) {
   const loadTheme = useThemeStore((s) => s.loadTheme);

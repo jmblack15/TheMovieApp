@@ -2,10 +2,20 @@ import { getLocales } from 'expo-localization';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { QueryClient } from '@tanstack/react-query';
 import en from './locales/en.json';
 import es from './locales/es.json';
 
 export type SupportedLanguage = 'en' | 'es';
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 5 * 60 * 1000,
+    },
+  },
+});
 export const SUPPORTED_LANGUAGES: SupportedLanguage[] = ['en', 'es'];
 const LANGUAGE_KEY = 'app_language';
 
@@ -40,6 +50,7 @@ export async function loadSavedLanguage(): Promise<void> {
 export async function changeLanguage(lang: SupportedLanguage): Promise<void> {
   await i18n.changeLanguage(lang);
   await AsyncStorage.setItem(LANGUAGE_KEY, lang);
+  await queryClient.invalidateQueries();
 }
 
 export function getCurrentLanguage(): SupportedLanguage {
