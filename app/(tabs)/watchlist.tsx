@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useEffect } from 'react';
 import {
   Alert,
@@ -20,7 +21,7 @@ import type { WatchlistItem } from '../../src/types/index';
 export default function WatchlistScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const items = useWatchlistStore((s) => s.items);
   const loadWatchlist = useWatchlistStore((s) => s.loadWatchlist);
   const removeMovie = useWatchlistStore((s) => s.removeMovie);
@@ -60,7 +61,8 @@ export default function WatchlistScreen() {
   const renderItem = useCallback(
     ({ item }: { item: WatchlistItem }) => {
       const posterUrl = buildPosterUrl(item.movie.poster_path, 'small');
-      const addedDate = new Date(item.addedAt).toLocaleDateString('es-CO', {
+      const locale = i18n.language === 'es' ? 'es-CO' : 'en-US';
+      const addedDate = new Date(item.addedAt).toLocaleDateString(locale, {
         day: 'numeric',
         month: 'short',
       });
@@ -79,7 +81,7 @@ export default function WatchlistScreen() {
             />
           ) : (
             <View style={[styles.poster, styles.posterFallback, { backgroundColor: colors.card }]}>
-              <Text style={styles.posterFallbackEmoji}>🎬</Text>
+              <Ionicons name="film-outline" size={24} color={colors.textHint} />
             </View>
           )}
 
@@ -88,8 +90,7 @@ export default function WatchlistScreen() {
               {item.movie.title}
             </Text>
             <Text style={[styles.meta, { color: colors.textSecondary }]}>
-              {formatYear(item.movie.release_date)} · ⭐{' '}
-              {formatRating(item.movie.vote_average)}
+              {formatYear(item.movie.release_date)} · ★ {formatRating(item.movie.vote_average)}
             </Text>
             <Text style={[styles.addedDate, { color: colors.textHint }]}>
               {t('watchlist.addedOn', { date: addedDate })}
@@ -102,12 +103,12 @@ export default function WatchlistScreen() {
             onPress={() => handleRemove(item)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.removeText, { color: colors.textSecondary }]}>✕</Text>
+            <Ionicons name="close" size={14} color={colors.textSecondary} />
           </Pressable>
         </Pressable>
       );
     },
-    [handleRowPress, handleRemove, colors, t],
+    [handleRowPress, handleRemove, colors, t, i18n.language],
   );
 
   return (
@@ -133,9 +134,12 @@ export default function WatchlistScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View testID="watchlist-empty" style={styles.empty}>
-            <Text style={styles.emptyEmoji}>🎞️</Text>
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+            <Ionicons name="bookmark-outline" size={48} color={colors.textHint} style={styles.emptyIcon} />
+            <Text style={[styles.emptyText, { color: colors.textPrimary }]}>
               {t('watchlist.empty')}
+            </Text>
+            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+              {t('watchlist.emptySubtitle')}
             </Text>
           </View>
         }
@@ -156,6 +160,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FONTS.sizes.xxl,
     fontWeight: FONTS.weights.bold,
+    letterSpacing: -0.5,
   },
   headerSubtitle: {
     fontSize: FONTS.sizes.sm + 1,
@@ -170,20 +175,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
     gap: SPACING.md,
   },
   poster: {
-    width: 64,
-    height: 96,
+    width: 60,
+    height: 90,
     borderRadius: RADIUS.sm,
   },
   posterFallback: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  posterFallbackEmoji: {
-    fontSize: 24,
   },
   info: {
     flex: 1,
@@ -206,22 +208,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  removeText: {
-    fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.bold,
-  },
   empty: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 100,
-    gap: SPACING.md,
+    gap: SPACING.sm,
   },
-  emptyEmoji: {
-    fontSize: 56,
+  emptyIcon: {
+    marginBottom: SPACING.sm,
   },
   emptyText: {
     fontSize: FONTS.sizes.lg,
     fontWeight: FONTS.weights.bold,
+  },
+  emptySubtitle: {
+    fontSize: FONTS.sizes.sm,
+    textAlign: 'center',
+    paddingHorizontal: SPACING.xl,
+    lineHeight: 18,
   },
 });

@@ -1,13 +1,21 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../hooks/useTheme';
-import { FONTS, RADIUS, SPACING } from '../../constants/theme';
+import { RADIUS, SPACING } from '../../constants/theme';
 
-const OPTIONS = [
-  { mode: 'light', label: '☀️', accessLabel: 'Light mode' },
-  { mode: 'system', label: '⚙️', accessLabel: 'System mode' },
-  { mode: 'dark', label: '🌙', accessLabel: 'Dark mode' },
-] as const;
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+const OPTIONS: {
+  mode: 'light' | 'system' | 'dark';
+  icon: IoniconName;
+  iconActive: IoniconName;
+  accessLabel: string;
+}[] = [
+  { mode: 'light', icon: 'sunny-outline', iconActive: 'sunny', accessLabel: 'Light mode' },
+  { mode: 'system', icon: 'phone-portrait-outline', iconActive: 'phone-portrait', accessLabel: 'System mode' },
+  { mode: 'dark', icon: 'moon-outline', iconActive: 'moon', accessLabel: 'Dark mode' },
+];
 
 export function ThemeToggle() {
   const { colors, mode, setMode } = useTheme();
@@ -19,23 +27,30 @@ export function ThemeToggle() {
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
     >
-      {OPTIONS.map((opt) => (
-        <Pressable
-          key={opt.mode}
-          style={[
-            styles.option,
-            mode === opt.mode && { backgroundColor: colors.accent },
-          ]}
-          onPress={() => setMode(opt.mode)}
-          accessibilityRole="button"
-          accessibilityLabel={opt.accessLabel}
-          accessibilityState={{ selected: mode === opt.mode }}
-          testID={`theme-toggle-${opt.mode}`}
-          android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: false }}
-        >
-          <Text style={styles.icon}>{opt.label}</Text>
-        </Pressable>
-      ))}
+      {OPTIONS.map((opt) => {
+        const active = mode === opt.mode;
+        return (
+          <Pressable
+            key={opt.mode}
+            style={[
+              styles.option,
+              active && { backgroundColor: colors.accent },
+            ]}
+            onPress={() => setMode(opt.mode)}
+            accessibilityRole="button"
+            accessibilityLabel={opt.accessLabel}
+            accessibilityState={{ selected: active }}
+            testID={`theme-toggle-${opt.mode}`}
+            android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: false }}
+          >
+            <Ionicons
+              name={active ? opt.iconActive : opt.icon}
+              size={15}
+              color={active ? '#FFFFFF' : colors.textSecondary}
+            />
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
@@ -50,13 +65,10 @@ const styles = StyleSheet.create({
   },
   option: {
     borderRadius: RADIUS.full,
-    padding: SPACING.sm,
+    padding: SPACING.sm - 2,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 36,
-    height: 36,
-  },
-  icon: {
-    fontSize: FONTS.sizes.md,
+    width: 32,
+    height: 32,
   },
 });

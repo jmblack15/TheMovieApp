@@ -16,7 +16,7 @@ export interface Movie {
   // Present on detail responses and enriched results
   genres?: Genre[];
   cast?: Cast[];
-  runtime?: number;
+  runtime?: number | null;
   tagline?: string;
   status?: string;
   budget?: number;

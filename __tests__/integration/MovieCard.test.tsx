@@ -62,13 +62,13 @@ describe('MovieCard', () => {
     expect(getByLabelText(/Alpha/)).toBeTruthy();
   });
 
-  it('shows 🎬 placeholder when poster_path is null', () => {
-    const { getByText } = render(<MovieCard movie={movieWithoutPoster} />);
-    expect(getByText('🎬')).toBeTruthy();
+  it('shows placeholder when poster_path is null', () => {
+    const { getByTestId } = render(<MovieCard movie={movieWithoutPoster} />);
+    expect(getByTestId('poster-placeholder')).toBeTruthy();
   });
 
-  it('does not show 🎬 placeholder when poster is set', () => {
-    const { queryByText } = render(<MovieCard movie={mockMovie} />);
-    expect(queryByText('🎬')).toBeNull();
+  it('does not show placeholder when poster is set', () => {
+    const { queryByTestId } = render(<MovieCard movie={mockMovie} />);
+    expect(queryByTestId('poster-placeholder')).toBeNull();
   });
 });

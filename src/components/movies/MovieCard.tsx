@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -34,8 +35,8 @@ export function MovieCard({ movie, onPress }: MovieCardProps) {
             transition={200}
           />
         ) : (
-          <View style={styles.posterPlaceholder}>
-            <Text style={styles.placeholderEmoji}>🎬</Text>
+          <View testID="poster-placeholder" style={[styles.posterPlaceholder, { backgroundColor: colors.card }]}>
+            <Ionicons name="film-outline" size={32} color={colors.textHint} />
           </View>
         )}
 
@@ -71,11 +72,11 @@ const styles = StyleSheet.create({
       ios: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.25,
         shadowRadius: 8,
       },
       android: {
-        elevation: 6,
+        elevation: 4,
       },
     }),
   },
@@ -87,24 +88,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#16213e',
-  },
-  placeholderEmoji: {
-    fontSize: 32,
   },
   gradientOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 60,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    height: 56,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   ratingBadge: {
     position: 'absolute',
     bottom: SPACING.xs + 2,
     right: SPACING.xs + 2,
-    backgroundColor: 'rgba(0,0,0,0.75)',
+    backgroundColor: 'rgba(0,0,0,0.7)',
     borderRadius: RADIUS.sm,
     paddingHorizontal: SPACING.xs + 1,
     paddingVertical: 2,

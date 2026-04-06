@@ -1,9 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -33,7 +33,12 @@ export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) 
         { backgroundColor: colors.card, borderColor: focused ? colors.accent : colors.border },
       ]}
     >
-      <Text style={styles.searchIcon}>🔍</Text>
+      <Ionicons
+        name="search"
+        size={18}
+        color={focused ? colors.accent : colors.textHint}
+        style={styles.searchIcon}
+      />
       <TextInput
         testID="filter-input"
         style={[
@@ -60,7 +65,7 @@ export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) 
           android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: true }}
           accessibilityLabel={t('home.clearFilter')}
         >
-          <Text style={[styles.clearText, { color: colors.textSecondary }]}>✕</Text>
+          <Ionicons name="close" size={14} color={colors.textSecondary} />
         </Pressable>
       )}
     </View>
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 48,
+    height: 46,
     borderWidth: 1,
     borderRadius: RADIUS.md + 2,
     marginHorizontal: SPACING.lg,
@@ -79,7 +84,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
   },
   searchIcon: {
-    fontSize: FONTS.sizes.lg,
     marginRight: SPACING.sm,
   },
   input: {
@@ -92,15 +96,11 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
   },
   clearButton: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: RADIUS.full,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: SPACING.xs,
-  },
-  clearText: {
-    fontSize: FONTS.sizes.sm,
-    fontWeight: FONTS.weights.bold,
   },
 });
