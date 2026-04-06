@@ -16,7 +16,6 @@ export const PAGINATION = {
 
 export const FILTER = {
   sortBy: 'popularity.desc',
-  language: 'es-ES',
 } as const;
 
 export const IMAGE_SIZES = {

@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { fetchMovieCredits, fetchMovieDetails, fetchMovies } from '../api/movies';
 import { QUERY_KEYS } from '../constants/api';
 import { useOfflineStore } from '../store/offlineStore';
@@ -8,12 +9,13 @@ const TEN_MINUTES = 10 * 60 * 1000;
 const THIRTY_MINUTES = 30 * 60 * 1000;
 
 export function useMoviesInfinite() {
+  const { i18n } = useTranslation();
   const isOnline = useOfflineStore((s) => s.isOnline);
   const cachedMovies = useOfflineStore((s) => s.cachedMovies);
   const syncMovies = useOfflineStore((s) => s.syncMovies);
 
   const query = useInfiniteQuery({
-    queryKey: QUERY_KEYS.moviesInfinite,
+    queryKey: [...QUERY_KEYS.moviesInfinite, i18n.language],
     queryFn: async ({ pageParam }) => {
       const data = await fetchMovies(pageParam);
       if (pageParam === 1) {
@@ -48,8 +50,9 @@ export function useMoviesInfinite() {
 }
 
 export function useMovieDetails(id: number) {
+  const { i18n } = useTranslation();
   return useQuery({
-    queryKey: QUERY_KEYS.movieDetails(id),
+    queryKey: [...QUERY_KEYS.movieDetails(id), i18n.language],
     queryFn: () => fetchMovieDetails(id),
     staleTime: TEN_MINUTES,
     enabled: !!id,
@@ -57,8 +60,9 @@ export function useMovieDetails(id: number) {
 }
 
 export function useMovieCredits(id: number) {
+  const { i18n } = useTranslation();
   return useQuery({
-    queryKey: QUERY_KEYS.movieCredits(id),
+    queryKey: [...QUERY_KEYS.movieCredits(id), i18n.language],
     queryFn: () => fetchMovieCredits(id),
     staleTime: TEN_MINUTES,
     enabled: !!id,
