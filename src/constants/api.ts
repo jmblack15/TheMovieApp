@@ -16,7 +16,6 @@ export const PAGINATION = {
 
 export const FILTER = {
   sortBy: 'popularity.desc',
-  language: 'es-ES',
 } as const;
 
 export const IMAGE_SIZES = {
@@ -47,8 +46,10 @@ export const STORAGE_KEYS = {
   watchlist: 'watchlist',
 } as const;
 
+import { t } from 'i18next';
+
 export const WATCHLIST = {
   notificationDelayMs: 3 * 60 * 1000, // 3 minutes
-  notificationTitle: '🎬 Tu watchlist te espera',
-  notificationBody: (movieName: string) => `¿Listo para ver ${movieName}?`,
-} as const;
+  notificationTitle: () => t('notifications.title'),
+  notificationBody: (movieName: string) => t('notifications.body', { movieName }),
+};

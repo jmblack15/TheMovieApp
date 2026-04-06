@@ -78,6 +78,35 @@ jest.mock('./src/store/themeStore', () => ({
   ),
 }));
 
+// ── i18next ───────────────────────────────────────────────────────────────────
+jest.mock('i18next', () => ({
+  t: (key: string, opts?: Record<string, unknown>) => {
+    if (opts) return `${key}:${JSON.stringify(opts)}`;
+    return key;
+  },
+  use: jest.fn().mockReturnThis(),
+  init: jest.fn().mockReturnThis(),
+  changeLanguage: jest.fn(),
+  language: 'en',
+}));
+
+// ── react-i18next ─────────────────────────────────────────────────────────────
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: Record<string, unknown>) => {
+      if (opts) return `${key}:${JSON.stringify(opts)}`;
+      return key;
+    },
+    i18n: { language: 'en', changeLanguage: jest.fn() },
+  }),
+  initReactI18next: { type: '3rdParty', init: jest.fn() },
+}));
+
+// ── expo-localization ─────────────────────────────────────────────────────────
+jest.mock('expo-localization', () => ({
+  getLocales: () => [{ languageCode: 'en', regionCode: 'US' }],
+}));
+
 // ── expo-constants ────────────────────────────────────────────────────────────
 jest.mock('expo-constants', () => ({
   expoConfig: { extra: { tmdbApiKey: 'test-api-key' } },

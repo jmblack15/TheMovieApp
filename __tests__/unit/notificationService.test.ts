@@ -79,7 +79,7 @@ describe('scheduleWatchlistNotification', () => {
     expect(mockSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
         content: expect.objectContaining({
-          title: WATCHLIST.notificationTitle,
+          title: WATCHLIST.notificationTitle(),
         }),
       }),
     );
@@ -92,7 +92,7 @@ describe('scheduleWatchlistNotification', () => {
     expect(mockSchedule).toHaveBeenCalledWith(
       expect.objectContaining({
         content: expect.objectContaining({
-          body: '¿Listo para ver Inception?',
+          body: expect.stringContaining('Inception'),
         }),
       }),
     );

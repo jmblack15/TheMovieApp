@@ -1,0 +1,58 @@
+{
+  "common": {
+    "loading": "Loading movies...",
+    "error": "Could not load movie",
+    "noResults": "No results for \"{{letter}}\"",
+    "noMovies": "No movies available",
+    "filterHint": "The movie must start with that letter, have at least 3 genres and at least 3 female and 3 male actors in the main cast.",
+    "offline": "No connection — showing cached content",
+    "lastSync": "Last sync: {{time}}",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}}h ago"
+  },
+  "home": {
+    "title": "Movies",
+    "subtitle": "Discover the most popular",
+    "filterPlaceholder": "Filter by letter (e.g. A)",
+    "filterLabel": "Filter movies by first letter",
+    "clearFilter": "Clear filter",
+    "verifyingCast": "Verifying genres and cast...",
+    "loadMore": "Loading more..."
+  },
+  "detail": {
+    "genres": "Genres",
+    "overview": "Overview",
+    "cast": "Cast",
+    "rating": "Rating",
+    "year": "Year",
+    "runtime": "Runtime",
+    "addToWatchlist": "Add to watchlist",
+    "removeFromWatchlist": "Remove from watchlist",
+    "inWatchlist": "In watchlist"
+  },
+  "watchlist": {
+    "title": "My Watchlist",
+    "subtitle_one": "{{count}} movie to watch",
+    "subtitle_other": "{{count}} movies to watch",
+    "empty": "Your watchlist is empty",
+    "emptySubtitle": "Add movies from the home screen to watch them later.",
+    "addedOn": "Added on {{date}}",
+    "removeTitle": "Remove from watchlist",
+    "removeMessage": "Remove \"{{title}}\" from your list?",
+    "cancel": "Cancel",
+    "remove": "Remove"
+  },
+  "notifications": {
+    "title": "🎬 Your watchlist is waiting",
+    "body": "Ready to watch {{movieName}}?"
+  },
+  "settings": {
+    "language": "Language",
+    "theme": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "english": "English",
+    "spanish": "Spanish"
+  }
+}

@@ -56,7 +56,7 @@ export async function scheduleWatchlistNotification(
     try {
       const notificationId = await Notifications.scheduleNotificationAsync({
         content: {
-          title: WATCHLIST.notificationTitle,
+          title: WATCHLIST.notificationTitle(),
           body: WATCHLIST.notificationBody(movieName),
           data: { movieId, movieName },
           sound: 'default',

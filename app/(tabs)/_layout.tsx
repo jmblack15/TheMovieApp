@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 import { FONTS, RADIUS } from "../../src/constants/theme";
 import { useThemeStore } from "../../src/store/themeStore";
 import { useWatchlistStore } from "../../src/store/watchlistStore";
@@ -32,6 +33,7 @@ export default function TabLayout() {
   const { bottom } = useSafeAreaInsets();
   const items = useWatchlistStore((s) => s.items);
   const colors = useThemeStore((s) => s.colors);
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -59,7 +61,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <TabIcon
               emoji="🎬"
-              label="Inicio"
+              label={t('home.title')}
               focused={focused}
               focusedBg={colors.accent}
               labelColor={colors.textHint}
@@ -76,7 +78,7 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <TabIcon
               emoji="🔖"
-              label="Watchlist"
+              label={t('watchlist.title')}
               focused={focused}
               focusedBg={colors.accent}
               labelColor={colors.textHint}

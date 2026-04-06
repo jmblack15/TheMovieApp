@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 
@@ -22,6 +23,7 @@ function sanitize(text: string): string {
 
 export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const [focused, setFocused] = useState(false);
 
   return (
@@ -43,8 +45,9 @@ export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) 
         onChangeText={(text) => onChangeText(sanitize(text))}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        placeholder="Buscar películas..."
+        placeholder={t('home.filterPlaceholder')}
         placeholderTextColor={colors.textHint}
+        accessibilityLabel={t('home.filterLabel')}
         returnKeyType="search"
         clearButtonMode="never"
       />
@@ -55,6 +58,7 @@ export function FilterInput({ value, onChangeText, onClear }: FilterInputProps) 
           onPress={() => { if (onClear) { onClear(); } else { onChangeText(''); } }}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: true }}
+          accessibilityLabel={t('home.clearFilter')}
         >
           <Text style={[styles.clearText, { color: colors.textSecondary }]}>✕</Text>
         </Pressable>

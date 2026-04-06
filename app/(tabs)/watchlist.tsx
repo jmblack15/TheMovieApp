@@ -10,6 +10,7 @@ import {
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useWatchlistStore } from '../../src/store/watchlistStore';
 import { useTheme } from '../../src/hooks/useTheme';
 import { buildPosterUrl, formatRating, formatYear } from '../../src/utils/image';
@@ -19,6 +20,7 @@ import type { WatchlistItem } from '../../src/types/index';
 export default function WatchlistScreen() {
   const router = useRouter();
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const items = useWatchlistStore((s) => s.items);
   const loadWatchlist = useWatchlistStore((s) => s.loadWatchlist);
   const removeMovie = useWatchlistStore((s) => s.removeMovie);
@@ -30,19 +32,19 @@ export default function WatchlistScreen() {
   const handleRemove = useCallback(
     (item: WatchlistItem) => {
       Alert.alert(
-        'Quitar de watchlist',
-        `¿Quitar "${item.movie.title}" de tu watchlist?`,
+        t('watchlist.removeTitle'),
+        t('watchlist.removeMessage', { title: item.movie.title }),
         [
-          { text: 'Cancelar', style: 'cancel' },
+          { text: t('watchlist.cancel'), style: 'cancel' },
           {
-            text: 'Quitar',
+            text: t('watchlist.remove'),
             style: 'destructive',
             onPress: () => removeMovie(item.movieId),
           },
         ],
       );
     },
-    [removeMovie],
+    [removeMovie, t],
   );
 
   const handleRowPress = useCallback(
@@ -90,7 +92,7 @@ export default function WatchlistScreen() {
               {formatRating(item.movie.vote_average)}
             </Text>
             <Text style={[styles.addedDate, { color: colors.textHint }]}>
-              Agregado: {addedDate}
+              {t('watchlist.addedOn', { date: addedDate })}
             </Text>
           </View>
 
@@ -105,7 +107,7 @@ export default function WatchlistScreen() {
         </Pressable>
       );
     },
-    [handleRowPress, handleRemove, colors],
+    [handleRowPress, handleRemove, colors, t],
   );
 
   return (
@@ -115,9 +117,11 @@ export default function WatchlistScreen() {
       edges={['top']}
     >
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Mi Watchlist</Text>
+        <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+          {t('watchlist.title')}
+        </Text>
         <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-          {items.length} película{items.length !== 1 ? 's' : ''} por ver
+          {t('watchlist.subtitle', { count: items.length })}
         </Text>
       </View>
 
@@ -131,7 +135,7 @@ export default function WatchlistScreen() {
           <View testID="watchlist-empty" style={styles.empty}>
             <Text style={styles.emptyEmoji}>🎞️</Text>
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              Tu watchlist está vacía
+              {t('watchlist.empty')}
             </Text>
           </View>
         }

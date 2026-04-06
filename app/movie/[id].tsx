@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useMovieCredits, useMovieDetails } from '../../src/hooks/useMovies';
 import { useWatchlistStore } from '../../src/store/watchlistStore';
 import { useTheme } from '../../src/hooks/useTheme';
@@ -24,6 +25,7 @@ export default function MovieDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string; title?: string }>();
   const movieId = Number(id);
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   const navigation = useNavigation();
   const markAsOpened = useWatchlistStore((s) => s.markAsOpened);
@@ -54,7 +56,7 @@ export default function MovieDetailScreen() {
       <View testID="detail-error" style={[styles.centered, { backgroundColor: colors.background }]}>
         <Text style={styles.errorEmoji}>😕</Text>
         <Text style={[styles.errorText, { color: colors.textSecondary }]}>
-          Could not load movie
+          {t('common.error')}
         </Text>
       </View>
     );
@@ -100,7 +102,9 @@ export default function MovieDetailScreen() {
       {/* C) Genres */}
       {movie.genres && movie.genres.length > 0 && (
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Genres</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t('detail.genres')}
+          </Text>
           <View style={styles.genreRow}>
             {movie.genres.map((genre) => (
               <View
@@ -122,7 +126,9 @@ export default function MovieDetailScreen() {
       {/* D) Overview */}
       {!!movie.overview && (
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Overview</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+            {t('detail.overview')}
+          </Text>
           <Text style={[styles.overview, { color: colors.textSecondary }]}>{movie.overview}</Text>
         </View>
       )}
@@ -131,7 +137,7 @@ export default function MovieDetailScreen() {
       {(loadingCredits || cast.length > 0) && (
         <View style={[styles.section, styles.castSection]}>
           <Text style={[styles.sectionTitle, styles.castTitle, { color: colors.textPrimary }]}>
-            Cast
+            {t('detail.cast')}
           </Text>
           {loadingCredits ? (
             <ActivityIndicator color={colors.accent} />

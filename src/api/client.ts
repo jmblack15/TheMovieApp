@@ -1,3 +1,4 @@
+import i18n from '../i18n';
 import { TMDB_BASE_URL } from '../constants/api';
 
 export class ApiError extends Error {
@@ -17,26 +18,26 @@ export class NetworkError extends Error {
   }
 }
 
-function appendApiKey(url: string): string {
-  const apiKey = process.env.EXPO_PUBLIC_TMDB_API_KEY;
-  if (!apiKey) {
-    throw new Error('EXPO_PUBLIC_TMDB_API_KEY is not set');
-  }
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}api_key=${apiKey}`;
-}
 
 async function get<T>(path: string, params?: Record<string, string | number>): Promise<T> {
-  let url = `${TMDB_BASE_URL}${path}`;
+  const urlObj = new URL(`${TMDB_BASE_URL}${path}`);
 
-  if (params && Object.keys(params).length > 0) {
-    const query = new URLSearchParams(
-      Object.entries(params).map(([k, v]) => [k, String(v)]),
-    ).toString();
-    url = `${url}?${query}`;
+  const apiKey = process.env.EXPO_PUBLIC_TMDB_API_KEY;
+  if (!apiKey) throw new Error('EXPO_PUBLIC_TMDB_API_KEY is not set');
+  urlObj.searchParams.append('api_key', apiKey);
+
+  const lang = i18n.language === 'es' ? 'es-ES' : 'en-US';
+  urlObj.searchParams.append('language', lang);
+
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        urlObj.searchParams.append(key, String(value));
+      }
+    });
   }
 
-  url = appendApiKey(url);
+  const url = urlObj.toString();
 
   let response: Response;
   try {

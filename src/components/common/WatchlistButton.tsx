@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../hooks/useTheme';
 import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 import type { Movie } from '../../types/index';
@@ -12,6 +13,7 @@ interface WatchlistButtonProps {
 
 export function WatchlistButton({ movie, size = 'default' }: WatchlistButtonProps) {
   const { colors } = useTheme();
+  const { t } = useTranslation();
   const isInWatchlist = useWatchlistStore((s) => s.isInWatchlist(movie.id));
   const toggleWatchlist = useWatchlistStore((s) => s.toggleWatchlist);
 
@@ -20,7 +22,9 @@ export function WatchlistButton({ movie, size = 'default' }: WatchlistButtonProp
       testID={`watchlist-btn-${movie.id}`}
       accessibilityRole="button"
       accessibilityState={{ selected: isInWatchlist }}
-      accessibilityLabel={isInWatchlist ? 'Quitar de watchlist' : 'Añadir a watchlist'}
+      accessibilityLabel={
+        isInWatchlist ? t('detail.removeFromWatchlist') : t('detail.addToWatchlist')
+      }
       onPress={() => toggleWatchlist(movie)}
       style={[
         styles.button,
@@ -38,7 +42,7 @@ export function WatchlistButton({ movie, size = 'default' }: WatchlistButtonProp
           size === 'large' && styles.labelLarge,
         ]}
       >
-        {isInWatchlist ? '✓ En watchlist' : '+ Watchlist'}
+        {isInWatchlist ? `✓ ${t('detail.inWatchlist')}` : `+ ${t('detail.addToWatchlist')}`}
       </Text>
     </Pressable>
   );
