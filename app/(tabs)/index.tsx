@@ -1,98 +1,203 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { StatusBar as ExpoStatusBar } from "expo-status-bar";
+import React, { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SheetManager } from "react-native-actions-sheet";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MovieGrid } from "../../src/components/MovieGrid";
+import { FilterInput } from "../../src/components/movies/FilterInput";
+import { SettingsMenu } from "../../src/components/SettingsMenu";
+import { FONTS, SPACING } from "../../src/constants/theme";
+import { useMovieFilter } from "../../src/hooks/useMovieFilter";
+import { useTheme } from "../../src/hooks/useTheme";
+import { useOfflineStore } from "../../src/store/offlineStore";
+import type { Movie } from "../../src/types/index";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const loadCachedMovies = useOfflineStore((s) => s.loadCachedMovies);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const {
+    movies,
+    letterInput,
+    isFiltering,
+    isLoading,
+    isLoadingFilter,
+    isOffline,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    isRefreshing,
+    handleLetterChange,
+    clearFilter,
+  } = useMovieFilter();
+
+  useEffect(() => {
+    loadCachedMovies();
+  }, [loadCachedMovies]);
+
+  const handleEndReached = useCallback(() => {
+    if (!isFiltering && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isFiltering]);
+
+  const handleMoviePress = useCallback(
+    (movie: Movie) => {
+      router.push({
+        pathname: "/movie/[id]",
+        params: { id: movie.id, title: movie.title },
+      });
+    },
+    [router],
+  );
+
+  const filterEmptyComponent =
+    isFiltering && !isLoadingFilter && movies.length === 0 ? (
+      <View testID="empty-state" style={styles.emptyState}>
+        <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>
+          {t("common.noResults", { letter: letterInput })}
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+          {t("common.filterHint")}
+        </Text>
+      </View>
+    ) : isFiltering && isLoadingFilter ? null : undefined;
+
+  return (
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={["top"]}
+    >
+      <ExpoStatusBar style={colors.statusBar} />
+
+      <View style={styles.header}>
+        <View>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>
+            {t("home.title")}
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            {t("home.subtitle")}
+          </Text>
+        </View>
+        <View style={styles.headerControls}>
+          <Pressable
+            onPress={() => SheetManager.show("settings-sheet")}
+            style={({ pressed }) => [
+              styles.iconButton,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+          >
+            <Ionicons
+              name="options-outline"
+              size={24}
+              color={colors.textPrimary}
+            />
+          </Pressable>
+          <SettingsMenu />
+        </View>
+      </View>
+
+      <FilterInput
+        value={letterInput}
+        onChangeText={handleLetterChange}
+        onClear={clearFilter}
+      />
+
+      {isLoadingFilter && (
+        <View style={styles.filterLoading}>
+          <ActivityIndicator size="small" color={colors.accent} />
+          <Text
+            style={[styles.filterLoadingText, { color: colors.textSecondary }]}
+          >
+            {t("home.verifyingCast")}
+          </Text>
+        </View>
+      )}
+
+      <MovieGrid
+        movies={movies}
+        isOffline={isOffline}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        isRefreshing={isRefreshing}
+        onEndReached={handleEndReached}
+        onRefresh={refetch}
+        onMoviePress={handleMoviePress}
+        emptyComponent={filterEmptyComponent}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: SPACING.lg,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  title: {
+    fontSize: FONTS.sizes.xxl,
+    fontWeight: FONTS.weights.bold,
+    letterSpacing: -0.5,
+  },
+  iconButton: {
+    padding: SPACING.xs,
+  },
+  subtitle: {
+    fontSize: FONTS.sizes.sm + 1,
+    marginTop: SPACING.xs,
+  },
+  headerControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: SPACING.sm,
+  },
+  filterLoading: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+  filterLoadingText: {
+    fontSize: FONTS.sizes.sm,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 80,
+  },
+  emptyTitle: {
+    fontSize: FONTS.sizes.lg,
+    fontWeight: FONTS.weights.bold,
+    marginBottom: SPACING.sm,
+    textAlign: "center",
+    paddingHorizontal: SPACING.lg,
+  },
+  emptySubtitle: {
+    fontSize: FONTS.sizes.sm,
+    textAlign: "center",
+    paddingHorizontal: SPACING.xl,
+    lineHeight: 18,
   },
 });

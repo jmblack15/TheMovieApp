@@ -1,0 +1,52 @@
+appId: com.movieexplorer.app
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Películas"
+- assertNotVisible:
+    id: "loading-state"
+    timeout: 5000
+- assertVisible:
+    id: "movies-list"
+- tapOn:
+    id: "filter-input"
+- inputText: "A"
+- extendedWaitUntil:
+    visible:
+      id: "movies-list"
+    timeout: 2000
+- tapOn:
+    id: "filter-clear-btn"
+- assertNotVisible:
+    id: "filter-clear-btn"
+- tapOn:
+    id: "movie-card-*"
+    index: 0
+- assertVisible:
+    id: "detail-screen"
+    timeout: 4000
+- assertVisible:
+    id: "cast-carousel"
+- assertVisible:
+    id: "watchlist-btn-*"
+- tapOn:
+    id: "watchlist-btn-*"
+- assertVisible:
+    text: "✓ En watchlist"
+- pressKey: Back
+- assertVisible:
+    id: "movies-list"
+- tapOn:
+    text: "Watchlist"
+- assertVisible:
+    id: "watchlist-screen"
+- assertVisible:
+    id: "watchlist-list"
+- tapOn:
+    id: "remove-btn-*"
+    index: 0
+- tapOn:
+    text: "Quitar"
+- assertVisible:
+    id: "watchlist-empty"
+    timeout: 2000

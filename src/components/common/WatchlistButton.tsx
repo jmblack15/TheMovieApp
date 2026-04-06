@@ -1,0 +1,86 @@
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../hooks/useTheme';
+import { FONTS, RADIUS, SPACING } from '../../constants/theme';
+import type { Movie } from '../../types/index';
+import { useWatchlistStore } from '../../store/watchlistStore';
+
+interface WatchlistButtonProps {
+  movie: Movie;
+  size?: 'default' | 'large';
+}
+
+export function WatchlistButton({ movie, size = 'default' }: WatchlistButtonProps) {
+  const { colors } = useTheme();
+  const { t } = useTranslation();
+  const isInWatchlist = useWatchlistStore((s) => s.isInWatchlist(movie.id));
+  const toggleWatchlist = useWatchlistStore((s) => s.toggleWatchlist);
+
+  const large = size === 'large';
+
+  return (
+    <Pressable
+      testID={`watchlist-btn-${movie.id}`}
+      accessibilityRole="button"
+      accessibilityState={{ selected: isInWatchlist }}
+      accessibilityLabel={
+        isInWatchlist ? t('detail.removeFromWatchlist') : t('detail.addToWatchlist')
+      }
+      onPress={() => toggleWatchlist(movie)}
+      style={[
+        styles.button,
+        large && styles.buttonLarge,
+        isInWatchlist
+          ? { backgroundColor: colors.accent, borderColor: colors.accent }
+          : { backgroundColor: 'transparent', borderColor: colors.border },
+      ]}
+      android_ripple={{ color: 'rgba(255,255,255,0.1)', borderless: false }}
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    >
+      <View style={styles.inner}>
+        <Ionicons
+          name={isInWatchlist ? 'bookmark' : 'bookmark-outline'}
+          size={large ? 18 : 15}
+          color={isInWatchlist ? '#FFFFFF' : colors.textSecondary}
+        />
+        <Text
+          style={[
+            styles.label,
+            large && styles.labelLarge,
+            { color: isInWatchlist ? '#FFFFFF' : colors.textSecondary },
+          ]}
+        >
+          {isInWatchlist ? t('detail.inWatchlist') : t('detail.addToWatchlist')}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    borderWidth: 1,
+    borderRadius: RADIUS.md,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonLarge: {
+    paddingVertical: SPACING.md,
+  },
+  inner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.xs + 2,
+  },
+  label: {
+    fontSize: FONTS.sizes.sm,
+    fontWeight: FONTS.weights.bold,
+  },
+  labelLarge: {
+    fontSize: FONTS.sizes.md,
+  },
+});

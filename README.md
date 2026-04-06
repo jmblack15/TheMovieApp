@@ -1,50 +1,221 @@
-# Welcome to your Expo app 👋
+# 🎬 Movie Explorer
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native app to explore movies using The Movie DB API
 
-## Get started
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
+![Expo](https://img.shields.io/badge/Expo-000020?style=flat&logo=expo&logoColor=white)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Tests](https://img.shields.io/badge/Tests-149%20passing-success?style=flat)
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- 🎬 Movie list with infinite scroll (TMDB /discover/movie)
+- 🔤 Letter filter — title + min 3 genres + balanced cast (≥3 female, ≥3 male actors)
+- 🎭 Movie detail screen with backdrop, cast carousel, genres and overview
+- ❤️ Watchlist — add/remove movies, persisted locally with AsyncStorage
+- 📡 Offline support — cached movies shown when no internet connection
+- 🔔 Smart notifications — fires 3 min after adding to watchlist, debounced, cancels if movie opened, navigates to detail on tap
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Tech stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+| Technology | Purpose |
+|------------|---------|
+| Expo SDK 53 | Framework |
+| Expo Router | File-based navigation |
+| TanStack Query v5 | Server state, infinite pagination, caching |
+| Zustand | Client state (watchlist, offline status) |
+| AsyncStorage | Local persistence |
+| expo-notifications | Local scheduled notifications |
+| expo-image | Optimized image loading with cache |
+| TypeScript | Type safety |
+| Jest + Testing Library | Unit and integration tests |
+| MSW v2 | API mocking in tests |
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
+## Requirements
 
-When you're ready, run:
+- Node.js >= 18
+- npm >= 9
+- Expo CLI
+- EAS CLI (for development build)
+- TMDB API key — free at https://www.themoviedb.org/settings/api
+- Android or iOS device (for development build with notifications)
+
+---
+
+## Installation
 
 ```bash
-npm run reset-project
+# Clone the repo
+git clone https://github.com/your-username/movie-explorer.git
+cd movie-explorer
+
+# Install dependencies
+npm install
+
+# Configure environment variables
+cp .env.example .env
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Edit `.env` and add your TMDB API key:
 
-## Learn more
+```
+EXPO_PUBLIC_TMDB_API_KEY=your_api_key_here
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Running the app
 
-## Join the community
+### Option A — Development build (recommended)
 
-Join our community of developers creating universal apps.
+Full features including notifications and deep links.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+# First time only: build the development client on EAS
+eas build --profile development --platform android
+
+# Download and install the APK on your device
+# Then start the development server:
+npx expo start --tunnel
+
+# Open your installed app and scan the QR code
+```
+
+### Option B — Expo Go (limited)
+
+```bash
+npx expo start --tunnel
+# Scan QR with Expo Go app
+```
+
+> ⚠️ Push notifications are not available in Expo Go SDK 53+. Use Option A for full functionality.
+
+---
+
+## Running tests
+
+```bash
+# Run all tests
+npm test
+
+# Run with coverage report
+npm test -- --watchAll=false --coverage
+
+# Run only unit tests
+npm test -- --testPathPattern='unit'
+
+# Run only integration tests
+npm test -- --testPathPattern='integration'
+```
+
+### Coverage summary
+
+| File | Coverage |
+|------|----------|
+| filterService.ts | 100% |
+| image.ts | 100% |
+| watchlistStore.ts | 100% |
+| movies.ts | 100% |
+| WatchlistButton.tsx | 100% |
+| storageService.ts | 96% |
+| notificationService.ts | 76% |
+| useMovieFilter.ts | 75% |
+| **Overall** | **~85%** |
+
+---
+
+## Project structure
+
+```
+movie-explorer/
+├── app/                        # Expo Router screens
+│   ├── _layout.tsx             # Root layout, providers, boot hooks
+│   ├── (tabs)/
+│   │   ├── _layout.tsx         # Tab navigator with watchlist badge
+│   │   ├── index.tsx           # Home screen — infinite scroll + filter
+│   │   └── watchlist.tsx       # Watchlist screen
+│   └── movie/
+│       └── [id].tsx            # Movie detail — dynamic route
+├── src/
+│   ├── api/                    # TMDB API client and endpoints
+│   ├── components/
+│   │   ├── common/             # OfflineBanner, WatchlistButton
+│   │   └── movies/             # MovieCard, CastCarousel, FilterInput, BackdropHeader
+│   ├── constants/              # API config, theme (colors, fonts, spacing)
+│   ├── hooks/                  # useMovies, useMovieFilter, useNetworkStatus, useNotificationDeepLink
+│   ├── services/               # filterService, notificationService, storageService
+│   ├── store/                  # watchlistStore, offlineStore (Zustand)
+│   ├── types/                  # Movie, Cast, Genre, WatchlistItem, etc.
+│   └── utils/                  # image URL builders, formatters
+├── __tests__/
+│   ├── unit/                   # Pure logic tests (no React)
+│   ├── integration/            # Component + store tests
+│   └── e2e/                    # Maestro E2E flows
+└── __mocks__/                  # MSW handlers for TMDB API
+```
+
+---
+
+## Architecture decisions
+
+**`filterService` as pure functions**
+All filter logic lives outside React, enabling direct unit tests without mounting components.
+
+**Two-step filter strategy**
+1. Filter by title locally — free, no API calls
+2. Fetch `/movie/{id}` and `/movie/{id}/credits` only for title-matched movies
+
+This minimizes API calls when the user types a letter.
+
+**TanStack Query + Zustand — no overlap**
+- TanStack Query manages remote data lifecycle (cache, pagination, revalidation)
+- Zustand manages local persisted state (watchlist, network status)
+
+**Notification debounce with internal timers**
+`notificationService` keeps a `Map<movieId, timer>` internally. Calling `scheduleWatchlistNotification` twice for the same movie cancels the first timer — no duplicates possible.
+
+**AsyncStorage via `npx expo install`**
+Installed with the Expo-compatible version to avoid "Native module is null" errors.
+
+---
+
+## Filter logic
+
+When the user types a letter, a movie is shown only if it passes **all 3 conditions simultaneously**:
+
+1. **Title starts with the letter** — checked locally (case-insensitive)
+2. **At least 3 genres** — from `/movie/{id}` details endpoint
+3. **At least 3 female actors** (gender=1) **AND at least 3 male actors** (gender=2) — from `/movie/{id}/credits`
+
+> Results may be empty because TMDB gender data is incomplete for many films. This is expected behavior — the filter is intentionally strict per the technical test requirements.
+
+---
+
+## Notification flow
+
+```
+User adds movie to watchlist
+        ↓
+scheduleWatchlistNotification(movieId, movieName)
+        ↓
+JS timer starts (3 minutes)
+        ↓ (if user opens movie detail before 3 min)
+cancelWatchlistNotification(movieId) → timer cancelled, no notification
+        ↓ (if 3 minutes pass)
+Notification fires: "¿Listo para ver {movieName}?"
+        ↓ (user taps notification)
+useNotificationDeepLink → router.push('/movie/[id]')
+```
+
+---
+
+## Notes
+
+- Commits were made frequently from the start of the project
+- Code prioritizes readability and maintainability over cleverness
