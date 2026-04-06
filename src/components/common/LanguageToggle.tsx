@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { changeLanguage, getCurrentLanguage, type SupportedLanguage } from '../../i18n';
+import { changeLanguage, type SupportedLanguage } from '../../i18n';
 import { useTheme } from '../../hooks/useTheme';
 import { FONTS, RADIUS, SPACING } from '../../constants/theme';
 
@@ -13,7 +13,7 @@ const OPTIONS: { lang: SupportedLanguage; label: string }[] = [
 export function LanguageToggle() {
   const { colors } = useTheme();
   const { i18n } = useTranslation();
-  const current = getCurrentLanguage();
+  const current = i18n.language as SupportedLanguage;
 
   return (
     <View
