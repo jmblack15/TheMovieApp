@@ -43,6 +43,35 @@ This build is specifically compiled for **x86_64/arm64 architectures** to run on
 
 ---
 
+### 🤖 Android (Physical Device)
+* **Download Link:** [The Movie App - Android APK](https://expo.dev/accounts/jmblack15/projects/the-movie-app/builds/a2333b17-0161-4a01-9c3d-b76dce7c3438)
+* **Format:** `.apk`
+* **Installation:** Download the file and select "Install Anyway" if prompted by Play Protect (standard for development builds).
+
+> [!IMPORTANT]
+> **Android Security Notice**
+> * **Android 8.0 (API 26) or higher:** You must enable "Install unknown apps" for your specific browser (e.g., Chrome) in *Settings > Apps > Special app access*.
+> * **Android 7.1.1 (API 25) or lower:** Enable "Unknown sources" in *Settings > Security*.
+
+### 🍎 iOS (Simulator)
+This build is specifically compiled for **x86_64/arm64 architectures** to run on the **iOS Simulator** (macOS). It does not require an Apple Developer account or physical device registration.
+
+* **Direct Download:** [Download MovieExplorer_Simulator.tar.gz](https://expo.dev/artifacts/eas/28f3924e-c181-4930-9895-8f4a7ac10891.tar.gz)
+* **Format:** `.tar.gz` (Compressed App Bundle)
+* **Requirements:** A Mac with Xcode installed.
+
+#### 🛠️ Installation Steps:
+1.  **Download** the `.tar.gz` file from the link above.
+2.  **Extract** the file on your Mac to reveal the `TheMovieApp.app` folder.
+3.  **Open your iOS Simulator** (via Xcode or by running `npx expo start`).
+4.  **Drag and drop** the `TheMovieApp.app` folder directly onto the Simulator screen.
+5.  The app icon will appear on the home screen. Tap it to launch.
+
+> [!TIP]
+> If you have **Expo Orbit** installed on your Mac, you can simply open the [Build Details Page](https://expo.dev/accounts/jmblack15/projects/the-movie-app/builds/28f3924e-c181-4930-9895-8f4a7ac10891) and click **"Open in Orbit"** for a one-click installation.
+
+---
+
 ## Features
 
 - 🎬 Movie list with infinite scroll (TMDB /discover/movie)
