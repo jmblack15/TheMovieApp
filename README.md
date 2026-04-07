@@ -81,8 +81,8 @@ This build is specifically compiled for **x86_64/arm64 architectures** to run on
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/movie-explorer.git
-cd movie-explorer
+git clone https://github.com/jmblack15/TheMovieApp.git
+cd TheMovieApp
 
 # Install dependencies
 npm install
